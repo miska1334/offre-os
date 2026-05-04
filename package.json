@@ -1,0 +1,20 @@
+{
+  "name": "offre-os-prototype",
+  "version": "1.0.0",
+  "description": "OffreOS — module AICoach / REVENUS-IA.FR — Prototype",
+  "private": true,
+  "scripts": {
+    "dev": "netlify dev",
+    "build": "echo 'Pas de build nécessaire — site statique'",
+    "deploy": "netlify deploy --prod"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.26.0"
+  },
+  "devDependencies": {
+    "netlify-cli": "^17.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

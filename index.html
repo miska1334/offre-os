@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AICoach — Crée ton offre avec l'IA</title>
+  <meta name="description" content="En 7 questions, AICoach construit ton offre, ta page de vente et tes emails. Guidé pas à pas. Gratuit pour commencer." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════
+     ÉCRAN 1 — LANDING
+═══════════════════════════════════════ -->
+<div id="screen-landing" class="screen active">
+  <header class="nav">
+    <span class="logo">AICoach</span>
+    <span class="logo-sub">par REVENUS-IA.FR</span>
+  </header>
+
+  <main class="landing-main">
+    <div class="hero">
+      <div class="hero-badge">✦ Gratuit pour commencer</div>
+      <h1 class="hero-title">
+        Ton offre complète,<br>
+        <em>en 7 questions.</em>
+      </h1>
+      <p class="hero-sub">
+        Tu réponds, l'IA construit. Tu repars avec ton titre, ta page de vente et tes emails prêts à utiliser.
+      </p>
+
+      <!-- Preuves -->
+      <div class="proofs" id="proofs-block">
+        <div class="proof-badge">🔒 Bêta en cours — 30 entrepreneurs testent en ce moment</div>
+      </div>
+
+      <!-- Ce que tu vas obtenir -->
+      <div class="outputs-preview">
+        <div class="output-item">
+          <span class="output-icon">✦</span>
+          <span>Une offre claire que tes clients comprennent tout de suite</span>
+        </div>
+        <div class="output-item">
+          <span class="output-icon">✦</span>
+          <span>Une page de vente complète, mot pour mot</span>
+        </div>
+        <div class="output-item">
+          <span class="output-icon">✦</span>
+          <span>3 emails de lancement à copier coller direct</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Capture email -->
+    <div class="email-capture-card">
+      <label class="capture-label" for="email-input">
+        On t'envoie ton offre par email. C'est par où ?
+      </label>
+      <div class="email-input-wrap">
+        <input
+          type="email"
+          id="email-input"
+          class="email-input"
+          placeholder="ton@email.fr"
+          autocomplete="email"
+          inputmode="email"
+        />
+        <div class="email-error" id="email-error" aria-live="polite"></div>
+      </div>
+      <label class="rgpd-label">
+        <input type="checkbox" id="rgpd-check" class="rgpd-check" />
+        <span class="rgpd-text">
+          J'accepte de recevoir des ressources AICoach par email.
+          Désinscription possible à tout moment.
+          <a href="confidentialite.html" target="_blank" rel="noopener">Politique de confidentialité</a>
+        </span>
+      </label>
+      <button id="start-btn" class="btn-primary" disabled>
+        Je crée mon offre gratuitement
+      </button>
+      <p class="capture-sub">Gratuit. Sans carte bancaire. Sans prise de tête.</p>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <a href="confidentialite.html">Confidentialité</a>
+    <span>·</span>
+    <a href="mentions-legales.html">Mentions légales</a>
+    <span>·</span>
+    <span>REVENUS-IA.FR</span>
+  </footer>
+</div>
+
+
+<!-- ═══════════════════════════════════════
+     ÉCRANS 2-8 — QUESTIONNAIRE (Q1-Q7)
+═══════════════════════════════════════ -->
+<div id="screen-questionnaire" class="screen">
+  <!-- Reprise de session -->
+  <div id="resume-banner" class="resume-banner hidden">
+    <span id="resume-text">Tu avais commencé — tu en étais à la question <strong id="resume-q">1</strong> sur 7.</span>
+    <div class="resume-actions">
+      <button id="resume-btn" class="btn-resume">Reprendre →</button>
+      <button id="restart-btn" class="btn-restart">Recommencer</button>
+    </div>
+  </div>
+
+  <div class="q-container" id="q-container">
+    <header class="q-header">
+      <button id="back-to-landing" class="logo-btn">AICoach</button>
+      <div class="progress-wrap">
+        <div class="progress-label">Question <span id="q-current">1</span> sur 7</div>
+        <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+      </div>
+    </header>
+
+    <div class="q-body">
+      <!-- Q1 -->
+      <div class="q-screen active" data-q="1">
+        <div class="q-content">
+          <h2 class="q-title">Tu veux vendre quoi ?</h2>
+          <p class="q-hint">Choisis ce qui te ressemble le plus.</p>
+          <div class="project-type-grid" id="q1-options">
+            <button class="type-card" data-value="coaching">
+              <span class="type-icon">🎯</span>
+              <span class="type-name">Coaching</span>
+              <span class="type-desc">Tu accompagnes des gens en individuel ou en groupe</span>
+            </button>
+            <button class="type-card" data-value="formation">
+              <span class="type-icon">📚</span>
+              <span class="type-name">Formation en ligne</span>
+              <span class="type-desc">Tu crées un programme que les gens suivent à leur rythme</span>
+            </button>
+            <button class="type-card" data-value="service">
+              <span class="type-icon">🛠</span>
+              <span class="type-name">Prestation de service</span>
+              <span class="type-desc">Tu fais quelque chose concrètement pour eux</span>
+            </button>
+            <button class="type-card" data-value="produit">
+              <span class="type-icon">💾</span>
+              <span class="type-name">Produit digital</span>
+              <span class="type-desc">Tu vends un outil, un template ou une ressource</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Q2 -->
+      <div class="q-screen" data-q="2">
+        <div class="q-content">
+          <h2 class="q-title">Tu veux aider qui ?</h2>
+          <p class="q-hint">Plus tu es précis, plus ton offre sera percutante.</p>
+          <div class="suggestions-grid">
+            <button class="suggestion-btn" data-value="Des femmes stressées qui veulent retrouver confiance en elles">💆 Des femmes stressées qui veulent retrouver confiance</button>
+            <button class="suggestion-btn" data-value="Des salariés qui veulent lancer leur activité en parallèle">💼 Des salariés qui veulent se lancer en parallèle</button>
+            <button class="suggestion-btn" data-value="Des créatifs qui veulent vivre de leur passion">🎨 Des créatifs qui veulent vivre de leur passion</button>
+            <button class="suggestion-btn" data-value="Des freelances qui cherchent leurs premiers clients">👩‍💻 Des freelances qui cherchent leurs premiers clients</button>
+            <button class="suggestion-btn suggestion-autre" data-value="">✏️ Autre — je décris ma cible</button>
+          </div>
+          <textarea id="q2-input" class="q-textarea" placeholder="Ex : des mamans qui reprennent le travail après un congé maternité…" minlength="10" maxlength="200"></textarea>
+          <div class="char-counter"><span id="q2-count">0</span> / 200</div>
+          <div class="q-error hidden" id="q2-error">Dis-nous pour qui c'est en quelques mots, c'est important pour la suite.</div>
+        </div>
+      </div>
+
+      <!-- Q3 -->
+      <div class="q-screen" data-q="3">
+        <div class="q-content">
+          <h2 class="q-title">Leur plus grand problème en ce moment ?</h2>
+          <p class="q-hint">Ce qui les frustre, les bloque, les empêche d'avancer.</p>
+          <div class="suggestions-grid">
+            <button class="suggestion-btn" data-value="Ils ne savent pas par où commencer et procrastinent depuis des mois">😰 Ils ne savent pas par où commencer et procrastinent</button>
+            <button class="suggestion-btn" data-value="Ils ne gagnent pas assez et ne savent pas comment changer ça">💸 Ils ne gagnent pas assez et ne savent pas comment changer</button>
+            <button class="suggestion-btn" data-value="Ils manquent de confiance et ont peur du regard des autres">😔 Ils manquent de confiance et ont peur du regard des autres</button>
+            <button class="suggestion-btn" data-value="Ils font des choses mais n'ont aucun résultat concret">🔄 Ils font des choses mais n'ont aucun résultat concret</button>
+            <button class="suggestion-btn suggestion-autre" data-value="">✏️ Autre — je décris leur problème</button>
+          </div>
+          <textarea id="q3-input" class="q-textarea" placeholder="Ex : ils passent des heures à essayer mais rien ne fonctionne vraiment…" minlength="20" maxlength="300"></textarea>
+          <div class="char-counter"><span id="q3-count">0</span> / 300</div>
+          <div class="q-error hidden" id="q3-error">Décris leur problème concret, c'est ce qui va rendre ton offre irrésistible.</div>
+        </div>
+      </div>
+
+      <!-- Q4 -->
+      <div class="q-screen" data-q="4">
+        <div class="q-content">
+          <h2 class="q-title">Qu'est-ce qui change dans leur vie grâce à toi ?</h2>
+          <p class="q-hint">Tu interviens, et leur vie bascule. C'est ça ta vraie valeur.</p>
+          <div class="before-after-wrap">
+            <div class="ba-field">
+              <label class="ba-label ba-before">Avant toi ils sont comment ?</label>
+              <div class="suggestions-grid suggestions-sm">
+                <button class="suggestion-btn" data-target="q4-before" data-value="Perdus, sans direction, ils tournent en rond">😵 Perdus, sans direction</button>
+                <button class="suggestion-btn" data-target="q4-before" data-value="Stressés par l'argent, le mois est toujours trop long">😟 Stressés par l'argent</button>
+                <button class="suggestion-btn" data-target="q4-before" data-value="Invisibles, personne ne les connaît encore">👻 Invisibles en ligne</button>
+                <button class="suggestion-btn suggestion-autre" data-target="q4-before" data-value="">✏️ Autre</button>
+              </div>
+              <textarea id="q4-before" class="q-textarea q-textarea-sm" placeholder="Ex : perdus, découragés, ils ne savent plus quoi faire…" minlength="10" maxlength="150"></textarea>
+              <div class="char-counter"><span id="q4b-count">0</span> / 150</div>
+            </div>
+            <div class="ba-arrow">↓</div>
+            <div class="ba-field">
+              <label class="ba-label ba-after">Après toi ils deviennent quoi ?</label>
+              <div class="suggestions-grid suggestions-sm">
+                <button class="suggestion-btn" data-target="q4-after" data-value="Ils ont un plan clair et passent enfin à l'action">🚀 Un plan clair, ils passent à l'action</button>
+                <button class="suggestion-btn" data-target="q4-after" data-value="Ils ont leurs premiers clients et un revenu stable">💰 Premiers clients, revenu stable</button>
+                <button class="suggestion-btn" data-target="q4-after" data-value="Ils sont connus dans leur niche et ont une vraie audience">🌟 Connus dans leur niche</button>
+                <button class="suggestion-btn suggestion-autre" data-target="q4-after" data-value="">✏️ Autre</button>
+              </div>
+              <textarea id="q4-after" class="q-textarea q-textarea-sm" placeholder="Ex : confiants, avec un plan clair et leurs premiers clients…" minlength="10" maxlength="150"></textarea>
+              <div class="char-counter"><span id="q4a-count">0</span> / 150</div>
+            </div>
+          </div>
+          <div class="q-error hidden" id="q4-error">Remplis les deux champs, c'est la base de ta promesse.</div>
+        </div>
+      </div>
+
+      <!-- Q5 -->
+      <div class="q-screen" data-q="5">
+        <div class="q-content">
+          <h2 class="q-title">Tu leur donnes quoi concrètement ?</h2>
+          <p class="q-hint">Appels, modules, durée, supports… plus c'est précis, plus l'offre est solide.</p>
+          <div class="suggestions-grid">
+            <button class="suggestion-btn" data-value="4 appels vidéo d'1h sur 4 semaines avec suivi entre les sessions">📞 4 appels vidéo d'1h sur 4 semaines</button>
+            <button class="suggestion-btn" data-value="Un programme de 6 modules vidéo à suivre en autonomie">🎥 6 modules vidéo en autonomie</button>
+            <button class="suggestion-btn" data-value="Un accompagnement de 3 mois avec un appel hebdomadaire et un suivi quotidien">📋 3 mois d'accompagnement avec suivi hebdo</button>
+            <button class="suggestion-btn" data-value="Des templates prêts à l'emploi et 2h de formation pour les utiliser">📄 Des templates prêts à l'emploi et 2h de formation</button>
+            <button class="suggestion-btn suggestion-autre" data-value="">✏️ Autre — je décris ce que je donne</button>
+          </div>
+          <textarea id="q5-input" class="q-textarea" placeholder="Ex : 8 semaines de programme, 1 appel par semaine de 60 min, accès à une communauté privée…" minlength="20" maxlength="400"></textarea>
+          <div class="char-counter"><span id="q5-count">0</span> / 400</div>
+          <div class="q-error hidden" id="q5-error">Dis-nous ce que tu livres concrètement, même si c'est pas encore parfait.</div>
+        </div>
+      </div>
+
+      <!-- Q6 -->
+      <div class="q-screen" data-q="6">
+        <div class="q-content">
+          <h2 class="q-title">Ils peuvent investir combien pour régler ça ?</h2>
+          <p class="q-hint">Pas de bonne ou mauvaise réponse. Si tu ne sais pas encore, l'IA propose quelque chose d'adapté.</p>
+          <div class="suggestions-grid">
+            <button class="suggestion-btn" data-target="q6-input" data-value="Moins de 200€">💶 Moins de 200€</button>
+            <button class="suggestion-btn" data-target="q6-input" data-value="Entre 200€ et 500€">💶 Entre 200€ et 500€</button>
+            <button class="suggestion-btn" data-target="q6-input" data-value="Entre 500€ et 1500€">💶 Entre 500€ et 1500€</button>
+            <button class="suggestion-btn" data-target="q6-input" data-value="Plus de 1500€">💶 Plus de 1500€</button>
+            <button class="suggestion-btn" data-target="q6-input" data-value="je ne sais pas encore">🤷 Je ne sais pas encore</button>
+          </div>
+          <input type="text" id="q6-input" class="q-input" placeholder="Ex : 500€, entre 300 et 800€, je ne sais pas…" maxlength="100" />
+          <p class="q-optional-hint">Ce champ est optionnel. L'IA s'adapte si tu ne sais pas.</p>
+        </div>
+      </div>
+
+      <!-- Q7 -->
+      <div class="q-screen" data-q="7">
+        <div class="q-content">
+          <h2 class="q-title">Tu vas les trouver où tes futurs clients ?</h2>
+          <p class="q-hint">Choisis les canaux où tu te sens à l'aise. Tu peux en sélectionner plusieurs.</p>
+          <div class="channels-grid" id="q7-channels">
+            <label class="channel-card">
+              <input type="checkbox" name="channel" value="tiktok" />
+              <span class="channel-icon">📱</span>
+              <span class="channel-name">TikTok / Reels</span>
+            </label>
+            <label class="channel-card">
+              <input type="checkbox" name="channel" value="instagram" />
+              <span class="channel-icon">📸</span>
+              <span class="channel-name">Instagram</span>
+            </label>
+            <label class="channel-card">
+              <input type="checkbox" name="channel" value="linkedin" />
+              <span class="channel-icon">💼</span>
+              <span class="channel-name">LinkedIn</span>
+            </label>
+            <label class="channel-card">
+              <input type="checkbox" name="channel" value="email" />
+              <span class="channel-icon">📧</span>
+              <span class="channel-name">Email / Newsletter</span>
+            </label>
+            <label class="channel-card">
+              <input type="checkbox" name="channel" value="bouche_a_oreille" />
+              <span class="channel-icon">🗣</span>
+              <span class="channel-name">Bouche à oreille</span>
+            </label>
+            <label class="channel-card">
+              <input type="checkbox" name="channel" value="publicite" />
+              <span class="channel-icon">📣</span>
+              <span class="channel-name">Publicité payante</span>
+            </label>
+          </div>
+          <div class="q-error hidden" id="q7-error">Sélectionne au moins un canal pour continuer.</div>
+        </div>
+      </div>
+    </div><!-- end q-body -->
+
+    <footer class="q-footer">
+      <button id="prev-btn" class="btn-prev hidden">← Retour</button>
+      <button id="next-btn" class="btn-primary" disabled>Suivant →</button>
+      <button id="generate-btn" class="btn-generate hidden">
+        <span class="generate-icon">⚡</span>
+        Générer mon offre
+      </button>
+    </footer>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════
+     ÉCRAN LOADING
+═══════════════════════════════════════ -->
+<div id="screen-loading" class="screen">
+  <div class="loading-container">
+    <div class="loading-icon">⚡</div>
+    <h2 class="loading-title">Je construis ton offre…</h2>
+    <p class="loading-msg" id="loading-msg">Analyse de ta cible en cours…</p>
+    <div class="loading-bar-wrap">
+      <div class="loading-bar" id="loading-bar"></div>
+    </div>
+    <p class="loading-sub">Tes réponses sont sauvegardées — ne ferme pas cette fenêtre.</p>
+
+    <div class="loading-error hidden" id="loading-error">
+      <p id="loading-error-msg">Une erreur est survenue. Tes réponses sont bien sauvegardées.</p>
+      <button id="retry-btn" class="btn-primary">Réessayer</button>
+      <button id="back-from-error" class="btn-secondary">Revoir mes réponses</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════
+     ÉCRAN RÉSULTATS
+═══════════════════════════════════════ -->
+<div id="screen-results" class="screen">
+  <header class="results-header">
+    <span class="logo">AICoach</span>
+    <button id="pro-sticky-btn" class="btn-pro-sticky">Sauvegarder & créer d'autres offres →</button>
+  </header>
+
+  <main class="results-main">
+    <div class="results-intro">
+      <h1 class="results-title">Voilà ton offre complète. ✦</h1>
+      <p class="results-sub">Chaque section est copiable individuellement. Prends le temps de lire — c'est le travail de 20 minutes que tu n'aurais pas fait seul.</p>
+    </div>
+
+    <!-- Section 1 — Titres -->
+    <section class="result-section" id="section-titres">
+      <div class="section-header">
+        <h2 class="section-title">Tes 3 titres d'offre</h2>
+        <p class="section-hint">3 variations — choisis celui qui te ressemble le plus, ou combine-les.</p>
+      </div>
+      <div class="titres-grid" id="titres-output"></div>
+    </section>
+
+    <!-- Section 2 — Promesse -->
+    <section class="result-section" id="section-promesse">
+      <div class="section-header">
+        <h2 class="section-title">Ta promesse de transformation</h2>
+        <p class="section-hint">C'est la phrase qui dit à ton client où il sera après toi. À utiliser partout.</p>
+      </div>
+      <div class="promesse-card" id="promesse-output"></div>
+    </section>
+
+    <!-- Section 3 — Architecture -->
+    <section class="result-section" id="section-architecture">
+      <div class="section-header">
+        <h2 class="section-title">Ce que contient ton offre</h2>
+      </div>
+      <div class="text-block" id="architecture-output"></div>
+    </section>
+
+    <!-- Section 4 — Prix -->
+    <section class="result-section" id="section-prix">
+      <div class="section-header">
+        <h2 class="section-title">Le prix recommandé pour ton marché</h2>
+      </div>
+      <div class="prix-card">
+        <div class="prix-montant" id="prix-montant"></div>
+        <div class="prix-justification" id="prix-justification"></div>
+        <button class="btn-copy" data-target="prix-full">Copier</button>
+      </div>
+    </section>
+
+    <!-- Section 5 — Page de vente -->
+    <section class="result-section" id="section-pdv">
+      <div class="section-header">
+        <h2 class="section-title">Ta page de vente — prête à coller</h2>
+        <p class="section-hint">6 blocs pour convaincre. Copie chaque bloc séparément ou tout d'un coup.</p>
+      </div>
+      <div class="pdv-blocks" id="pdv-output"></div>
+      <button class="btn-copy-all" id="copy-all-pdv">Tout copier — page de vente complète</button>
+    </section>
+
+    <!-- Section 6 — Page capture -->
+    <section class="result-section" id="section-capture">
+      <div class="section-header">
+        <h2 class="section-title">Ta page de capture</h2>
+        <p class="section-hint">Lead magnet inclus.</p>
+      </div>
+      <div class="capture-blocks" id="capture-output"></div>
+    </section>
+
+    <!-- Section 7 — Emails -->
+    <section class="result-section" id="section-emails">
+      <div class="section-header">
+        <h2 class="section-title">Tes 3 emails de lancement</h2>
+        <p class="section-hint">Prêts à coller dans Systeme.io ou ton outil d'emailing.</p>
+      </div>
+      <div class="emails-list" id="emails-output"></div>
+    </section>
+
+    <!-- PAYWALL -->
+    <section class="paywall-section" id="section-paywall">
+      <div class="paywall-divider">✦ Tu veux aller plus loin ? ✦</div>
+      <div class="paywall-card">
+        <h2 class="paywall-title">Ton offre est prête.<br>Et si tu pouvais en créer autant que tu veux ?</h2>
+        <p class="paywall-sub">AICoach Pro — accès illimité, sauvegarde, 6 emails, templates FR par niche.</p>
+        <ul class="paywall-benefits">
+          <li>✦ Offres illimitées — plus de limite de 1</li>
+          <li>✦ Sauvegarde de tous tes projets</li>
+          <li>✦ 6 emails au lieu de 3</li>
+          <li>✦ Templates FR premium par niche</li>
+          <li>✦ Historique DÉCLIC + recommandations</li>
+        </ul>
+        <div class="paywall-price">47€ <span class="paywall-price-sub">— paiement unique. Accès à vie.</span></div>
+        <p class="paywall-guarantee">✓ Garantie commerciale 7 jours : si tu n'es pas satisfait après avoir utilisé le produit, remboursement intégral sur simple email à contact@revenus-ia.fr</p>
+        <a href="https://gumroad.com/VOTRE_LIEN" id="paywall-cta" class="btn-paywall" target="_blank" rel="noopener">
+          Passer à AICoach Pro →
+        </a>
+        <button id="paywall-dismiss" class="btn-dismiss">Non merci, je reste sur la version gratuite</button>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <a href="confidentialite.html">Confidentialité</a>
+    <span>·</span>
+    <a href="mentions-legales.html">Mentions légales</a>
+    <span>·</span>
+    <span>REVENUS-IA.FR</span>
+  </footer>
+</div>
+
+<script src="js/analytics.js"></script>
+<script src="js/questionnaire.js"></script>
+<script src="js/results.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
