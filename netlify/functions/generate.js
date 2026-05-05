@@ -15,8 +15,7 @@ function checkRateLimit(ip) {
   return true;
 }
 
-const SYSTEM_PROMPT = `Tu es un expert en création d'offres et en copywriting pour le marché francophone.
-Tu aides les entrepreneurs français, belges, suisses et québécois à structurer et vendre leurs offres en ligne.
+const SYSTEM_PROMPT = `Tu es un expert en création d'offres et en copywriting pour le marché francophone. Tu aides les entrepreneurs français, belges, suisses et québécois à structurer et vendre leurs offres en ligne.
 
 RÈGLE ABSOLUE : Tu réponds UNIQUEMENT avec un objet JSON valide. Pas de texte avant. Pas de texte après. Pas de balises markdown. Juste le JSON brut.
 
@@ -41,7 +40,7 @@ function buildPrompt(answers) {
   const types = { coaching:'Coaching', formation:'Formation en ligne', service:'Prestation de service', produit:'Produit digital' };
   const channels = Array.isArray(answers[7]) ? answers[7].join(', ') : (answers[7] || 'Non précisé');
   const q4b = (answers[4] && answers[4].before) ? answers[4].before : 'Non précisé';
-  const q4a = (answers[4] && answers[4].after)  ? answers[4].after  : 'Non précisé';
+  const q4a = (answers[4] && answers[4].after) ? answers[4].after : 'Non précisé';
   const prix = (answers[6] && answers[6] !== 'non précisé') ? answers[6] : 'non précisé — suggère un prix adapté';
   return `Crée une offre complète pour cet entrepreneur francophone.
 TYPE : ${types[answers[1]] || answers[1] || 'Non précisé'}
@@ -89,7 +88,7 @@ exports.handler = async (event) => {
   catch { return { statusCode: 400, headers, body: JSON.stringify({ error: 'Requête invalide' }) }; }
 
   const apiKey = process.env.CLAUDE_API_KEY;
-  if (!apiKey) { console.error('CLAUDE_API_KEY manquante'); return { statusCode: 500, headers, body: JSON.stringify({ error: 'Configuration serveur manquante' }) }; }
+  if (!apiKey) { return { statusCode: 500, headers, body: JSON.stringify({ error: 'Configuration serveur manquante' }) }; }
 
   try {
     const res = await fetch('https://api.anthropic.com/v1/messages', {
@@ -99,10 +98,8 @@ exports.handler = async (event) => {
     });
 
     if (!res.ok) {
-      const t = await res.text().catch(() => '');
-      console.error('Claude error:', res.status, t);
       if (res.status === 429) return { statusCode: 429, headers, body: JSON.stringify({ error: 'Service surchargé — réessaie.' }) };
-      if (res.status === 401) return { statusCode: 500, headers, body: JSON.stringify({ error: 'Clé API invalide — vérifie dans Netlify.' }) };
+      if (res.status === 401) return { statusCode: 500, headers, body: JSON.stringify({ error: 'Clé API invalide.' }) };
       throw new Error('API ' + res.status);
     }
 
@@ -112,7 +109,6 @@ exports.handler = async (event) => {
     return { statusCode: 200, headers, body: JSON.stringify({ result: text }) };
 
   } catch (err) {
-    console.error('Erreur:', err.message);
     return { statusCode: 500, headers, body: JSON.stringify({ error: 'Erreur lors de la génération — réessaie.' }) };
   }
 };
