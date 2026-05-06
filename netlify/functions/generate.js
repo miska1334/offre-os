@@ -1,4 +1,4 @@
-/* Netlify Function — generate.js — sans dépendance npm */
+/* Netlify Function — generate.js — Haiku + timeout 9s */
 
 const rateLimitMap = new Map();
 const RATE_LIMIT = 10;
@@ -15,11 +15,11 @@ function checkRateLimit(ip) {
   return true;
 }
 
-const SYSTEM_PROMPT = `Tu es un expert en création d'offres et en copywriting pour le marché francophone. Tu aides les entrepreneurs français, belges, suisses et québécois à structurer et vendre leurs offres en ligne.
+const SYSTEM_PROMPT = `Tu es un expert en création d'offres et en copywriting pour le marché francophone.
 
-RÈGLE ABSOLUE : Tu réponds UNIQUEMENT avec un objet JSON valide. Pas de texte avant. Pas de texte après. Pas de balises markdown. Juste le JSON brut.
+RÈGLE ABSOLUE : Réponds UNIQUEMENT avec un objet JSON valide. Pas de texte avant ou après. Pas de markdown.
 
-Structure JSON exacte :
+Structure JSON :
 {
   "titres": ["titre1", "titre2", "titre3"],
   "promesse": "string",
@@ -34,15 +34,15 @@ Structure JSON exacte :
   ]
 }
 
-RÈGLES QUALITÉ : Tout en français naturel. Titres percutants 15-25 mots. Promesse 1 phrase avant/après. Page de vente 600-900 mots. Emails 150-250 mots chacun. Ton humain et conversationnel. Pas de jargon anglais.`;
+Règles : Français naturel. Titres 15-25 mots. Promesse avant/après en 1 phrase. Page de vente 400-600 mots. Emails 100-150 mots chacun. Ton humain. Pas de jargon anglais.`;
 
 function buildPrompt(answers) {
   const types = { coaching:'Coaching', formation:'Formation en ligne', service:'Prestation de service', produit:'Produit digital' };
   const channels = Array.isArray(answers[7]) ? answers[7].join(', ') : (answers[7] || 'Non précisé');
   const q4b = (answers[4] && answers[4].before) ? answers[4].before : 'Non précisé';
   const q4a = (answers[4] && answers[4].after) ? answers[4].after : 'Non précisé';
-  const prix = (answers[6] && answers[6] !== 'non précisé') ? answers[6] : 'non précisé — suggère un prix adapté';
-  return `Crée une offre complète pour cet entrepreneur francophone.
+  const prix = (answers[6] && answers[6] !== 'non précisé') ? answers[6] : 'suggère un prix adapté au marché FR';
+  return `Crée une offre pour cet entrepreneur francophone.
 TYPE : ${types[answers[1]] || answers[1] || 'Non précisé'}
 CIBLE : ${answers[2] || 'Non précisé'}
 PROBLÈME : ${answers[3] || 'Non précisé'}
@@ -81,21 +81,41 @@ exports.handler = async (event) => {
   if (event.httpMethod !== 'POST') return { statusCode: 405, headers, body: JSON.stringify({ error: 'Method not allowed' }) };
 
   const ip = (event.headers['x-forwarded-for'] || '').split(',')[0] || 'unknown';
-  if (!checkRateLimit(ip)) return { statusCode: 429, headers, body: JSON.stringify({ error: 'Trop de requêtes — réessaie dans 1 heure.' }) };
+  if (!checkRateLimit(ip)) return { statusCode: 429, headers, body: JSON.stringify({ error: 'Trop de requêtes.' }) };
 
   let answers;
-  try { const b = JSON.parse(event.body || '{}'); answers = b.answers; if (!answers) throw new Error(); }
-  catch { return { statusCode: 400, headers, body: JSON.stringify({ error: 'Requête invalide' }) }; }
+  try {
+    const b = JSON.parse(event.body || '{}');
+    answers = b.answers;
+    if (!answers) throw new Error();
+  } catch {
+    return { statusCode: 400, headers, body: JSON.stringify({ error: 'Requête invalide' }) };
+  }
 
   const apiKey = process.env.CLAUDE_API_KEY;
-  if (!apiKey) { return { statusCode: 500, headers, body: JSON.stringify({ error: 'Configuration serveur manquante' }) }; }
+  if (!apiKey) return { statusCode: 500, headers, body: JSON.stringify({ error: 'Configuration manquante' }) };
+
+  const controller = new AbortController();
+  const tid = setTimeout(() => controller.abort(), 9000);
 
   try {
     const res = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'x-api-key': apiKey, 'anthropic-version': '2023-06-01' },
-      body: JSON.stringify({ model: 'claude-haiku-4-5-20251001', max_tokens: 4000, system: SYSTEM_PROMPT, messages: [{ role: 'user', content: buildPrompt(sanitize(answers)) }] }),
+      signal: controller.signal,
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': apiKey,
+        'anthropic-version': '2023-06-01',
+      },
+      body: JSON.stringify({
+        model: 'claude-haiku-4-5-20251001',
+        max_tokens: 1500,
+        system: SYSTEM_PROMPT,
+        messages: [{ role: 'user', content: buildPrompt(sanitize(answers)) }],
+      }),
     });
+
+    clearTimeout(tid);
 
     if (!res.ok) {
       if (res.status === 429) return { statusCode: 429, headers, body: JSON.stringify({ error: 'Service surchargé — réessaie.' }) };
@@ -109,6 +129,8 @@ exports.handler = async (event) => {
     return { statusCode: 200, headers, body: JSON.stringify({ result: text }) };
 
   } catch (err) {
-    return { statusCode: 500, headers, body: JSON.stringify({ error: 'Erreur lors de la génération — réessaie.' }) };
+    clearTimeout(tid);
+    const msg = err.name === 'AbortError' ? 'Génération trop longue — réessaie.' : 'Erreur lors de la génération — réessaie.';
+    return { statusCode: 500, headers, body: JSON.stringify({ error: msg }) };
   }
 };
