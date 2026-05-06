@@ -96,7 +96,7 @@ exports.handler = async (event) => {
   if (!apiKey) return { statusCode: 500, headers, body: JSON.stringify({ error: 'Configuration manquante' }) };
 
   const controller = new AbortController();
-  const tid = setTimeout(() => controller.abort(), 9000);
+  const tid = setTimeout(() => controller.abort(), 25000);
 
   try {
     const res = await fetch('https://api.anthropic.com/v1/messages', {
