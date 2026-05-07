@@ -39,7 +39,8 @@
     Access-Control-Allow-Methods = "POST, OPTIONS"
     Access-Control-Allow-Headers = "Content-Type"
 
-# Variables d'environnement (à définir dans le dashboard Netlify)
-# NE JAMAIS mettre la clé API ici — toujours dans le dashboard Netlify
+# Variables d'environnement à définir dans le dashboard Netlify
+# NE JAMAIS mettre la clé API ici
 # Variables requises :
 #   CLAUDE_API_KEY = sk-ant-...
+#   MOCK_MODE = true
