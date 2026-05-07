@@ -7,9 +7,6 @@
   # Dossier des fonctions serverless
   functions = "netlify/functions"
 
-[functions]
-  timeout = 26
-
 # Redirects pour les pages légales
 [[redirects]]
   from = "/confidentialite"
