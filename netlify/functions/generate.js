@@ -3,6 +3,7 @@
    - MOCK_MODE=true : réponse simulée, 0 appel Claude
    - MOCK_MODE=false : appel Claude Haiku réel
    - Prompt sobre et crédible, sans marketing agressif
+   - Tutoiement imposé dans tous les outputs
 ═══════════════════════════════════════════════════════ */
 
 // ── Rate limiting ─────────────────────────────────────
@@ -20,58 +21,65 @@ function checkRateLimit(ip) {
   return true;
 }
 
-// ── Mock JSON ─────────────────────────────────────────
+// ── Mock JSON — en tutoiement ─────────────────────────
 const MOCK_RESULT = {
   titres: [
-    "Structurez votre activité de conseil et présentez votre service avec clarté",
-    "Un accompagnement pour clarifier votre offre et améliorer votre prospection",
-    "Passez d'une idée floue à une première version de service testable"
+    "Structure ton activité de conseil et présente ton service avec clarté",
+    "Un accompagnement pour clarifier ton offre et améliorer ta prospection",
+    "Passe d'une idée floue à une première version de service testable"
   ],
-  promesse: "Je vous aide à structurer votre activité de conseil pour pouvoir la présenter clairement et commencer à prospecter avec un message cohérent.",
-  architecture_offre: "Accompagnement individuel sur 4 semaines.\n\n• 4 séances de travail en visio de 60 min\n• Accès à un espace de partage de documents entre les séances\n• Un compte-rendu écrit après chaque séance\n• Un document de synthèse final avec votre offre structurée et votre message de prospection",
+  promesse: "Je t'aide à structurer ton activité de conseil pour pouvoir la présenter clairement et commencer à prospecter avec un message cohérent.",
+  architecture_offre: "Accompagnement individuel sur 4 semaines.\n\n• 4 séances de travail en visio de 60 min\n• Accès à un espace de partage de documents entre les séances\n• Un compte-rendu écrit après chaque séance\n• Un document de synthèse final avec ton offre structurée et ton message de prospection",
   prix: {
     montant: "800€",
-    justification: "Tarif cohérent pour un accompagnement individuel de 4 semaines sur ce type de marché. À ajuster selon votre positionnement et votre clientèle cible."
+    justification: "Tarif cohérent pour un accompagnement individuel de 4 semaines sur ce type de marché. À ajuster selon ton positionnement et ta clientèle cible."
   },
   page_de_vente: {
-    headline: "Vous avez une expertise, mais vous ne savez pas encore comment la présenter ?",
-    probleme: "Vous avez des compétences réelles. Vous savez ce que vous pouvez apporter à vos clients. Mais quand vient le moment de l'expliquer, les mots manquent, ou vous avez l'impression de ne pas être assez différencié. Prospecter dans ces conditions est difficile.",
-    solution: "En 4 semaines de travail ensemble, on clarifie ce que vous proposez exactement, à qui, et pourquoi c'est pertinent pour eux. Vous repartez avec une offre structurée et un message de prospection que vous pouvez utiliser immédiatement.",
+    headline: "Tu as une expertise, mais tu ne sais pas encore comment la présenter ?",
+    probleme: "Tu as des compétences réelles. Tu sais ce que tu peux apporter à tes clients. Mais quand vient le moment de l'expliquer, les mots manquent, ou tu as l'impression de ne pas être assez différencié. Prospecter dans ces conditions est difficile.",
+    solution: "En 4 semaines de travail ensemble, on clarifie ce que tu proposes exactement, à qui, et pourquoi c'est pertinent pour eux. Tu repars avec une offre structurée et un message de prospection que tu peux utiliser immédiatement.",
     offre: "Ce que comprend l'accompagnement :\n• 4 séances individuelles en visio de 60 min\n• Un espace de partage pour travailler entre les séances\n• Un compte-rendu écrit après chaque session\n• Un document de synthèse final : offre structurée + message de prospection",
-    objections: "Est-ce adapté à ma situation ?\nCet accompagnement convient aux consultants, coachs et prestataires qui ont une activité en cours ou en démarrage et qui veulent clarifier leur positionnement. Un appel préalable permet de vérifier que c'est le bon moment.\n\nQu'est-ce que j'aurai concrètement à la fin ?\nUn document de synthèse avec votre offre structurée et votre message de prospection, que vous pouvez utiliser directement.",
-    cta: "Pour en savoir plus ou réserver un premier appel de 30 minutes, contactez-moi via le formulaire ci-dessous."
+    objections: "Est-ce adapté à ma situation ?\nCet accompagnement convient aux consultants, coachs et prestataires qui ont une activité en cours ou en démarrage et qui veulent clarifier leur positionnement. Un appel préalable permet de vérifier que c'est le bon moment.\n\nQu'est-ce que j'aurai concrètement à la fin ?\nUn document de synthèse avec ton offre structurée et ton message de prospection, que tu peux utiliser directement.",
+    cta: "Pour en savoir plus ou réserver un premier appel de 30 minutes, contacte-moi via le formulaire ci-dessous."
   },
   page_capture: {
-    headline: "Téléchargez le guide : structurer son offre de conseil en partant de zéro",
-    benefices: "• Les questions à se poser avant de prospecter\n• Comment formuler sa valeur ajoutée simplement\n• Un exemple de message de prospection sobre et efficace",
-    lead_magnet: "Guide PDF — 8 pages — Structurer son offre de conseil : méthode et exemples"
+    headline: "Télécharge le guide : structurer ton offre de conseil en partant de zéro",
+    benefices: "• Les questions à te poser avant de prospecter\n• Comment formuler ta valeur ajoutée simplement\n• Un exemple de message de prospection sobre et efficace",
+    lead_magnet: "Guide PDF — 8 pages — Structurer ton offre de conseil : méthode et exemples"
   },
   emails: [
     {
       numero: 1,
-      objet: "Votre guide est disponible — et une question pour commencer",
-      corps: "Bonjour,\n\nMerci d'avoir téléchargé le guide. J'espère qu'il vous sera utile.\n\nAvant d'aller plus loin, une question directe : quelle est la partie qui vous pose le plus de problème en ce moment — formuler votre offre, identifier votre cible, ou trouver comment vous différencier ?\n\nVotre réponse m'aide à adapter ce que je partage avec vous.\n\nCordialement,"
+      objet: "Ton guide est disponible — et une question pour commencer",
+      corps: "Salut,\n\nMerci d'avoir téléchargé le guide. J'espère qu'il te sera utile.\n\nAvant d'aller plus loin, une question directe : quelle est la partie qui te pose le plus de problème en ce moment — formuler ton offre, identifier ta cible, ou trouver comment te différencier ?\n\nTa réponse m'aide à adapter ce que je partage avec toi.\n\nÀ bientôt,"
     },
     {
       numero: 2,
       objet: "La question que je pose à tous mes clients au début",
-      corps: "Bonjour,\n\nLa plupart des personnes que j'accompagne ont le même réflexe au départ : elles décrivent ce qu'elles font plutôt que ce que ça apporte.\n\n\"Je suis coach en gestion du temps\" plutôt que \"J'accompagne des managers qui n'arrivent plus à prioriser\".\n\nLa différence paraît petite, mais elle change complètement la manière dont vos prospects vous perçoivent.\n\nDans le guide, je détaille comment reformuler ça. Si vous avez des questions sur votre cas précis, répondez à cet email.\n\nCordialement,"
+      corps: "Salut,\n\nLa plupart des personnes que j'accompagne ont le même réflexe au départ : elles décrivent ce qu'elles font plutôt que ce que ça apporte.\n\n\"Je suis coach en gestion du temps\" plutôt que \"J'accompagne des managers qui n'arrivent plus à prioriser\".\n\nLa différence paraît petite, mais elle change complètement la manière dont tes prospects te perçoivent.\n\nDans le guide, je détaille comment reformuler ça. Si tu as des questions sur ton cas précis, réponds à cet email.\n\nÀ bientôt,"
     },
     {
       numero: 3,
-      objet: "Si vous voulez aller plus loin",
-      corps: "Bonjour,\n\nDepuis quelques jours, je vous partage des éléments pour clarifier votre offre.\n\nSi vous souhaitez travailler ce sujet de manière plus structurée, je propose un accompagnement individuel de 4 semaines. L'objectif : repartir avec une offre claire et un message de prospection que vous pouvez tester immédiatement.\n\nSi ça vous intéresse, je vous propose un premier appel de 30 minutes pour faire le point sur votre situation avant de décider.\n\nCordialement,"
+      objet: "Si tu veux aller plus loin",
+      corps: "Salut,\n\nDepuis quelques jours, je te partage des éléments pour clarifier ton offre.\n\nSi tu souhaites travailler ce sujet de manière plus structurée, je propose un accompagnement individuel de 4 semaines. L'objectif : repartir avec une offre claire et un message de prospection que tu peux tester immédiatement.\n\nSi ça t'intéresse, je te propose un premier appel de 30 minutes pour faire le point sur ta situation avant de décider.\n\nÀ bientôt,"
     }
   ]
 };
 
-// ── Prompt système — sobre et crédible ───────────────
+// ── Prompt système — sobre, crédible, tutoiement imposé ──
 const SYSTEM_PROMPT = `Tu es un consultant en positionnement et en copywriting pour le marché francophone. Tu aides des entrepreneurs, consultants, coachs et prestataires de service à structurer leur offre et leur message.
 
 RÈGLE DE FORMAT ABSOLUE : Réponds uniquement avec un objet JSON valide. Aucun texte avant ou après. Aucun markdown. JSON brut uniquement.
 
 Structure JSON obligatoire :
 {"titres":["t1","t2","t3"],"promesse":"string","architecture_offre":"string","prix":{"montant":"string","justification":"string"},"page_de_vente":{"headline":"string","probleme":"string","solution":"string","offre":"string","objections":"string","cta":"string"},"page_capture":{"headline":"string","benefices":"string","lead_magnet":"string"},"emails":[{"numero":1,"objet":"string","corps":"string"},{"numero":2,"objet":"string","corps":"string"},{"numero":3,"objet":"string","corps":"string"}]}
+
+RÈGLE DE TUTOIEMENT ABSOLUE :
+- Tous les contenus générés s'adressent à l'entrepreneur en le tutoyant.
+- Utiliser systématiquement : "tu", "ton", "ta", "tes", "toi".
+- Ne jamais utiliser "vous", "votre", "vos" pour s'adresser à l'entrepreneur.
+- Exception unique : si l'entrepreneur s'adresse lui-même à ses clients dans un texte (page de vente, emails), le ton envers ses clients peut être au vouvoiement ou tutoiement selon ce qui est naturel pour sa niche — mais l'entrepreneur lui-même est toujours tutoyé dans les explications et titres.
+- Garder un ton professionnel, sobre et crédible malgré le tutoiement.
 
 RÈGLES DE CONTENU — à respecter impérativement :
 
@@ -93,7 +101,7 @@ URGENCE ET RARETÉ :
 - Ne jamais créer de fausse rareté.
 
 EMAILS :
-- Ton conversationnel et professionnel. Pas de fausse deadline.
+- Ton conversationnel, professionnel et en tutoiement. Pas de fausse deadline.
 - Email 1 : accueil + question ouverte.
 - Email 2 : valeur concrète, conseil ou méthode utile.
 - Email 3 : présentation de l'offre, sobre, avec invitation à un échange.
@@ -135,6 +143,7 @@ BUDGET CLIENT : ${px}
 CANAUX D'ACQUISITION : ${ch}
 
 Instructions :
+- Tutoie l'entrepreneur dans tous les contenus générés.
 - Reste sobre et crédible.
 - N'invente pas de revenus précis, de garanties ou d'urgences.
 - Si des informations manquent, complète de façon raisonnable sans exagérer.
