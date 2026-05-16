@@ -25,7 +25,7 @@
     <div class="hero">
       <div class="hero-badge">✦ Gratuit pour commencer</div>
       <h1 class="hero-title">
-        Ton offre complète,<br>
+        Ta première base d'offre,<br>
         <em>en 7 questions.</em>
       </h1>
       <p class="hero-sub">
@@ -33,7 +33,7 @@
       </p>
 
       <div class="proofs" id="proofs-block">
-        <div class="proof-badge">🔒 Bêta en cours — 30 entrepreneurs testent en ce moment</div>
+        <div class="proof-badge">🔒 Bêta en cours · 30 entrepreneurs testent en ce moment</div>
       </div>
 
       <div class="outputs-preview">
@@ -43,7 +43,7 @@
         </div>
         <div class="output-item">
           <span class="output-icon">✦</span>
-          <span>Une page de vente complète, mot pour mot</span>
+          <span>Une première page de vente structurée</span>
         </div>
         <div class="output-item">
           <span class="output-icon">✦</span>
@@ -58,7 +58,7 @@
       </label>
 
       <p class="capture-sub" style="margin-top: -6px; margin-bottom: 14px;">
-        Ton email sert uniquement à démarrer le test bêta. Aucun email automatique n’est encore envoyé.
+        Ton email sert uniquement à démarrer le test bêta. Aucun email automatique n'est encore envoyé.
       </p>
 
       <div class="email-input-wrap">
@@ -106,7 +106,7 @@
 <div id="screen-questionnaire" class="screen">
 
   <div id="resume-banner" class="resume-banner hidden">
-    <span id="resume-text">Tu avais commencé — tu en étais à la question <strong id="resume-q">1</strong> sur 7.</span>
+    <span id="resume-text">Tu avais commencé, tu en étais à la question <strong id="resume-q">1</strong> sur 7.</span>
     <div class="resume-actions">
       <button id="resume-btn" class="btn-resume">Reprendre →</button>
       <button id="restart-btn" class="btn-restart">Recommencer</button>
@@ -171,12 +171,13 @@
             <button class="suggestion-btn" data-value="Des femmes stressées qui veulent retrouver confiance en elles">💆 Des femmes stressées qui veulent retrouver confiance</button>
             <button class="suggestion-btn" data-value="Des salariés qui veulent lancer leur activité en parallèle">💼 Des salariés qui veulent se lancer en parallèle</button>
             <button class="suggestion-btn" data-value="Des créatifs qui veulent vivre de leur passion">🎨 Des créatifs qui veulent vivre de leur passion</button>
-            <button class="suggestion-btn" data-value="Des freelances qui cherchent leurs premiers clients">👩‍💻 Des freelances qui cherchent leurs premiers clients</button>
-            <button class="suggestion-btn suggestion-autre" data-value="">✏️ Autre — je décris ma cible</button>
+            <button class="suggestion-btn" data-value="Des freelances qui veulent clarifier leur prospection">👩‍💻 Des freelances qui veulent clarifier leur prospection</button>
+            <button class="suggestion-btn suggestion-autre" data-value="">✏️ Autre : je décris ma cible</button>
           </div>
 
           <textarea id="q2-input" class="q-textarea" placeholder="Ex : des mamans qui reprennent le travail après un congé maternité…" minlength="10" maxlength="200"></textarea>
           <div class="char-counter"><span id="q2-count">0</span> / 200</div>
+          <div class="q-error hidden" id="q2-personal-hint">Ajoute un détail sur ta vraie cible : la suggestion est un point de départ, pas la réponse.</div>
           <div class="q-error hidden" id="q2-error">Dis-nous pour qui c'est en quelques mots, c'est important pour la suite.</div>
         </div>
       </div>
@@ -184,7 +185,7 @@
       <!-- Q3 -->
       <div class="q-screen" data-q="3">
         <div class="q-content">
-          <h2 class="q-title">Leur plus grand problème en ce moment ?</h2>
+          <h2 class="q-title">Quel est leur plus gros problème en ce moment ?</h2>
           <p class="q-hint">Ce qui les frustre, les bloque, les empêche d'avancer.</p>
 
           <div class="suggestions-grid">
@@ -192,11 +193,12 @@
             <button class="suggestion-btn" data-value="Ils ne gagnent pas assez et ne savent pas comment changer ça">💸 Ils ne gagnent pas assez et ne savent pas comment changer</button>
             <button class="suggestion-btn" data-value="Ils manquent de confiance et ont peur du regard des autres">😔 Ils manquent de confiance et ont peur du regard des autres</button>
             <button class="suggestion-btn" data-value="Ils font des choses mais n'ont aucun résultat concret">🔄 Ils font des choses mais n'ont aucun résultat concret</button>
-            <button class="suggestion-btn suggestion-autre" data-value="">✏️ Autre — je décris leur problème</button>
+            <button class="suggestion-btn suggestion-autre" data-value="">✏️ Autre : je décris leur problème</button>
           </div>
 
           <textarea id="q3-input" class="q-textarea" placeholder="Ex : ils passent des heures à essayer mais rien ne fonctionne vraiment…" minlength="20" maxlength="300"></textarea>
           <div class="char-counter"><span id="q3-count">0</span> / 300</div>
+          <div class="q-error hidden" id="q3-personal-hint">Précise le problème avec tes propres mots : le détail personnel rend le résultat beaucoup plus précis.</div>
           <div class="q-error hidden" id="q3-error">Décris leur problème concret, c'est ce qui va rendre ton offre irrésistible.</div>
         </div>
       </div>
@@ -229,12 +231,12 @@
 
               <div class="suggestions-grid suggestions-sm">
                 <button class="suggestion-btn" data-target="q4-after" data-value="Ils ont un plan clair et passent enfin à l'action">🚀 Un plan clair, ils passent à l'action</button>
-                <button class="suggestion-btn" data-target="q4-after" data-value="Ils ont leurs premiers clients et un revenu stable">💰 Premiers clients, revenu stable</button>
+                <button class="suggestion-btn" data-target="q4-after" data-value="Ils ont un message clair et savent quelles actions tester en priorité">✅ Un message clair, des actions à tester</button>
                 <button class="suggestion-btn" data-target="q4-after" data-value="Ils sont connus dans leur niche et ont une vraie audience">🌟 Connus dans leur niche</button>
                 <button class="suggestion-btn suggestion-autre" data-target="q4-after" data-value="">✏️ Autre</button>
               </div>
 
-              <textarea id="q4-after" class="q-textarea q-textarea-sm" placeholder="Ex : confiants, avec un plan clair et leurs premiers clients…" minlength="10" maxlength="150"></textarea>
+              <textarea id="q4-after" class="q-textarea q-textarea-sm" placeholder="Ex : confiants, avec un plan clair et des actions concrètes à tester…" minlength="10" maxlength="150"></textarea>
               <div class="char-counter"><span id="q4a-count">0</span> / 150</div>
             </div>
           </div>
@@ -246,39 +248,42 @@
       <!-- Q5 -->
       <div class="q-screen" data-q="5">
         <div class="q-content">
-          <h2 class="q-title">Tu leur donnes quoi concrètement ?</h2>
-          <p class="q-hint">Appels, modules, durée, supports… plus c'est précis, plus l'offre est solide.</p>
+          <h2 class="q-title">Comment tu travailles avec eux ?</h2>
+          <p class="q-hint">Durée, format, méthode, livrables… plus c'est précis, plus l'offre est solide.</p>
 
           <div class="suggestions-grid">
             <button class="suggestion-btn" data-value="4 appels vidéo d'1h sur 4 semaines avec suivi entre les sessions">📞 4 appels vidéo d'1h sur 4 semaines</button>
             <button class="suggestion-btn" data-value="Un programme de 6 modules vidéo à suivre en autonomie">🎥 6 modules vidéo en autonomie</button>
             <button class="suggestion-btn" data-value="Un accompagnement de 3 mois avec un appel hebdomadaire et un suivi quotidien">📋 3 mois d'accompagnement avec suivi hebdo</button>
             <button class="suggestion-btn" data-value="Des templates prêts à l'emploi et 2h de formation pour les utiliser">📄 Des templates prêts à l'emploi et 2h de formation</button>
-            <button class="suggestion-btn suggestion-autre" data-value="">✏️ Autre — je décris ce que je donne</button>
+            <button class="suggestion-btn suggestion-autre" data-value="">✏️ Autre : je décris ce que je donne</button>
           </div>
 
           <textarea id="q5-input" class="q-textarea" placeholder="Ex : 8 semaines de programme, 1 appel par semaine de 60 min, accès à une communauté privée…" minlength="20" maxlength="400"></textarea>
           <div class="char-counter"><span id="q5-count">0</span> / 400</div>
+          <div class="q-error hidden" id="q5-personal-hint">Décris comment toi tu travailles : le détail personnel rend l'offre beaucoup plus précise.</div>
           <div class="q-error hidden" id="q5-error">Dis-nous ce que tu livres concrètement, même si c'est pas encore parfait.</div>
         </div>
       </div>
 
-      <!-- Q6 -->
+      <!-- Q6 — DIFFÉRENCIATION -->
       <div class="q-screen" data-q="6">
         <div class="q-content">
-          <h2 class="q-title">Ils peuvent investir combien pour régler ça ?</h2>
-          <p class="q-hint">Pas de bonne ou mauvaise réponse. Si tu ne sais pas encore, l'IA propose quelque chose d'adapté.</p>
+          <h2 class="q-title">Pourquoi toi plutôt qu'un autre ?</h2>
+          <p class="q-hint">Ton expérience, ton angle, ta méthode, ton histoire, tes preuves. C'est ce qui rend ton offre unique.</p>
 
           <div class="suggestions-grid">
-            <button class="suggestion-btn" data-target="q6-input" data-value="Moins de 200€">💶 Moins de 200€</button>
-            <button class="suggestion-btn" data-target="q6-input" data-value="Entre 200€ et 500€">💶 Entre 200€ et 500€</button>
-            <button class="suggestion-btn" data-target="q6-input" data-value="Entre 500€ et 1500€">💶 Entre 500€ et 1500€</button>
-            <button class="suggestion-btn" data-target="q6-input" data-value="Plus de 1500€">💶 Plus de 1500€</button>
-            <button class="suggestion-btn" data-target="q6-input" data-value="je ne sais pas encore">🤷 Je ne sais pas encore</button>
+            <button class="suggestion-btn" data-value="J'ai moi-même vécu ce problème et développé une méthode qui m'a aidé à m'en sortir">🙋 J'ai vécu ce problème et trouvé ma propre méthode</button>
+            <button class="suggestion-btn" data-value="J'ai plusieurs années d'expérience dans ce domaine avec des résultats concrets sur le terrain">📅 J'ai de l'expérience concrète dans ce domaine</button>
+            <button class="suggestion-btn" data-value="Mon approche est plus simple, plus directe et plus rapide que ce qui existe déjà sur le marché">⚡ Mon approche est plus simple que ce qui existe</button>
+            <button class="suggestion-btn" data-value="J'accompagne mes clients de façon très personnalisée, pas en masse, avec une vraie disponibilité">🤝 J'accompagne de façon très personnalisée</button>
+            <button class="suggestion-btn suggestion-autre" data-value="">✏️ Autre : je décris ma vraie différence</button>
           </div>
 
-          <input type="text" id="q6-input" class="q-input" placeholder="Ex : 500€, entre 300 et 800€, je ne sais pas…" maxlength="100" />
-          <p class="q-optional-hint">Ce champ est optionnel. L'IA s'adapte si tu ne sais pas.</p>
+          <textarea id="q6-input" class="q-textarea" placeholder="Ex : j'ai moi-même traversé cette situation pendant 2 ans, j'ai accompagné plus de 30 personnes, ma méthode tient en 3 étapes concrètes…" minlength="20" maxlength="400"></textarea>
+          <div class="char-counter"><span id="q6-count">0</span> / 400</div>
+          <div class="q-error hidden" id="q6-personal-hint">Ajoute un détail personnel pour continuer : l'IA a besoin de ta vraie différence, pas d'une réponse générique.</div>
+          <div class="q-error hidden" id="q6-error">Dis-nous ce qui te distingue. Même en 2 phrases, c'est ce qui rendra ton offre unique.</div>
         </div>
       </div>
 
@@ -321,6 +326,17 @@
           </div>
 
           <div class="q-error hidden" id="q7-error">Sélectionne au moins un canal pour continuer.</div>
+
+          <!-- Champ prix optionnel -->
+          <div class="optional-price-wrap" style="margin-top: 24px; padding-top: 20px; border-top: 1px solid rgba(0,0,0,0.08);">
+            <p class="optional-price-label" style="font-size: 0.95rem; font-weight: 600; margin-bottom: 6px;">
+              As-tu déjà un prix en tête ?
+              <span style="font-size: 0.78rem; font-weight: 400; color: #6b7280; margin-left: 6px;">Optionnel</span>
+            </p>
+            <input type="text" id="price-input" class="q-input" placeholder="Ex : 500€, entre 300 et 800€, je ne sais pas…" maxlength="100" />
+            <p class="q-optional-hint">Si tu ne sais pas encore, l'IA propose une fourchette cohérente.</p>
+          </div>
+
         </div>
       </div>
 
@@ -357,7 +373,7 @@
       <div class="loading-bar" id="loading-bar"></div>
     </div>
 
-    <p class="loading-sub">Tes réponses sont sauvegardées — ne ferme pas cette fenêtre.</p>
+    <p class="loading-sub">Tes réponses sont sauvegardées. Ne ferme pas cette fenêtre.</p>
 
     <div class="loading-error hidden" id="loading-error">
       <p id="loading-error-msg">Une erreur est survenue. Tes réponses sont bien sauvegardées.</p>
@@ -374,19 +390,19 @@
 <div id="screen-results" class="screen">
   <header class="results-header">
     <span class="logo">AICoach</span>
-    <button id="pro-sticky-btn" class="btn-pro-sticky">Rejoindre la liste d’attente →</button>
+    <button id="pro-sticky-btn" class="btn-pro-sticky">Rejoindre la liste d'attente →</button>
   </header>
 
   <main class="results-main">
     <div class="results-intro">
-      <h1 class="results-title">Voilà ton offre complète. ✦</h1>
-      <p class="results-sub">Chaque section est copiable individuellement. Prends le temps de lire — c'est le travail de 20 minutes que tu n'aurais pas fait seul.</p>
+      <h1 class="results-title">Voilà ta première base d'offre. ✦</h1>
+      <p class="results-sub">Chaque section est copiable individuellement. Prends le temps de lire, c'est le travail de 20 minutes que tu n'aurais pas fait seul.</p>
     </div>
 
     <section class="result-section" id="section-titres">
       <div class="section-header">
         <h2 class="section-title">Tes 3 titres d'offre</h2>
-        <p class="section-hint">3 variations — choisis celui qui te ressemble le plus, ou combine-les.</p>
+        <p class="section-hint">3 variations : choisis celui qui te ressemble le plus, ou combine-les.</p>
       </div>
       <div class="titres-grid" id="titres-output"></div>
     </section>
@@ -419,11 +435,11 @@
 
     <section class="result-section" id="section-pdv">
       <div class="section-header">
-        <h2 class="section-title">Ta page de vente — prête à coller</h2>
+        <h2 class="section-title">Ta première page de vente, à adapter</h2>
         <p class="section-hint">6 blocs pour convaincre. Copie chaque bloc séparément ou tout d'un coup.</p>
       </div>
       <div class="pdv-blocks" id="pdv-output"></div>
-      <button class="btn-copy-all" id="copy-all-pdv">Tout copier — page de vente complète</button>
+      <button class="btn-copy-all" id="copy-all-pdv">Copier cette base de page de vente</button>
     </section>
 
     <section class="result-section" id="section-capture">
@@ -454,22 +470,22 @@
 
         <ul class="paywall-benefits">
           <li>✦ Accès prioritaire à la version Pro quand elle sera prête</li>
-          <li>✦ Possibilité de tester les nouvelles fonctions avant l’ouverture publique</li>
+          <li>✦ Possibilité de tester les nouvelles fonctions avant l'ouverture publique</li>
           <li>✦ Création de plusieurs offres en préparation</li>
           <li>✦ Sauvegarde de projets en préparation</li>
           <li>✦ Emails et templates plus complets en préparation</li>
         </ul>
 
         <div class="paywall-price">
-          Liste d’attente <span class="paywall-price-sub">— aucun paiement pour le moment.</span>
+          Liste d'attente <span class="paywall-price-sub">(aucun paiement pour le moment)</span>
         </div>
 
         <p class="paywall-guarantee">
-          AICoach Pro n’est pas encore vendu. Tu peux simplement demander à être prévenu quand l’accès bêta sera disponible.
+          AICoach Pro n'est pas encore vendu. Tu peux simplement demander à être prévenu quand l'accès bêta sera disponible.
         </p>
 
         <a href="mailto:contact@revenus-ia.fr?subject=Liste%20d'attente%20AICoach%20Pro&body=Bonjour%2C%0A%0AJe%20souhaite%20rejoindre%20la%20liste%20d'attente%20AICoach%20Pro.%0A%0AMerci." id="paywall-cta" class="btn-paywall">
-          Rejoindre la liste d’attente →
+          Rejoindre la liste d'attente →
         </a>
 
         <button id="paywall-dismiss" class="btn-dismiss">
