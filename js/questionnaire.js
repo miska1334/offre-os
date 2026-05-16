@@ -1,6 +1,9 @@
 /* ═══════════════════════════════════════
    QUESTIONNAIRE.JS — Q1 à Q7
    Validation, navigation, sauvegarde
+   - Q6 : différenciation (pourquoi toi ?)
+   - Prix : champ optionnel sur Q7
+   - Suggestions : lock sur Q2/Q3/Q5/Q6
 ═══════════════════════════════════════ */
 
 const Questionnaire = {
@@ -20,13 +23,13 @@ const Questionnaire = {
     for (let i = 1; i <= this.totalQ; i++) {
       const saved = sessionStorage.getItem('offre_q' + i);
       if (saved) {
-        try {
-          this.answers[i] = JSON.parse(saved);
-        } catch {
-          this.answers[i] = saved;
-        }
+        try { this.answers[i] = JSON.parse(saved); }
+        catch { this.answers[i] = saved; }
       }
     }
+    const savedPrice = sessionStorage.getItem('offre_prix_opt');
+    if (savedPrice) this.answers['prix_opt'] = savedPrice;
+
     const savedQ = parseInt(sessionStorage.getItem('offre_current_q') || '1');
     this.currentQ = Math.max(1, Math.min(savedQ, this.totalQ));
   },
@@ -51,7 +54,6 @@ const Questionnaire = {
           this.renderQ(1);
           Analytics.track('session_restarted');
         };
-
         Analytics.sessionResumed(savedQ);
       }
     }
@@ -62,6 +64,7 @@ const Questionnaire = {
       sessionStorage.removeItem('offre_q' + i);
     }
     sessionStorage.removeItem('offre_current_q');
+    sessionStorage.removeItem('offre_prix_opt');
     this.answers = {};
     this.currentQ = 1;
   },
@@ -71,16 +74,13 @@ const Questionnaire = {
     this.currentQ = qNum;
     sessionStorage.setItem('offre_current_q', qNum);
 
-    // Afficher le bon écran de question
     document.querySelectorAll('.q-screen').forEach(s => s.classList.remove('active'));
     const target = document.querySelector(`.q-screen[data-q="${qNum}"]`);
     if (target) target.classList.add('active');
 
-    // Progress bar
     document.getElementById('q-current').textContent = qNum;
     document.getElementById('progress-fill').style.width = ((qNum - 1) / this.totalQ * 100) + '%';
 
-    // Boutons nav
     const prevBtn     = document.getElementById('prev-btn');
     const nextBtn     = document.getElementById('next-btn');
     const generateBtn = document.getElementById('generate-btn');
@@ -95,23 +95,16 @@ const Questionnaire = {
       generateBtn.classList.remove('hidden');
     }
 
-    // Pré-remplir la réponse sauvegardée
     this.prefillAnswer(qNum);
-
-    // Valider l'état initial du bouton
     this.validateQ(qNum, false);
-
-    // Scroll to top
     window.scrollTo(0, 0);
-
-    // Setup events pour cette question
     this.bindQEvents(qNum);
   },
 
   // ── Pré-remplissage ─────────────────────
   prefillAnswer(qNum) {
     const answer = this.answers[qNum];
-    if (!answer) return;
+    if (!answer && qNum !== 7) return;
 
     switch (qNum) {
       case 1:
@@ -121,36 +114,40 @@ const Questionnaire = {
         break;
       case 2:
         const q2 = document.getElementById('q2-input');
-        if (q2) { q2.value = answer; this.updateCounter('q2-count', answer.length, 200); }
+        if (q2 && answer) { q2.value = answer; this.updateCounter('q2-count', answer.length, 200); }
         break;
       case 3:
         const q3 = document.getElementById('q3-input');
-        if (q3) { q3.value = answer; this.updateCounter('q3-count', answer.length, 300); }
+        if (q3 && answer) { q3.value = answer; this.updateCounter('q3-count', answer.length, 300); }
         break;
       case 4:
-        if (answer.before) {
+        if (answer && answer.before) {
           const q4b = document.getElementById('q4-before');
           if (q4b) { q4b.value = answer.before; this.updateCounter('q4b-count', answer.before.length, 150); }
         }
-        if (answer.after) {
+        if (answer && answer.after) {
           const q4a = document.getElementById('q4-after');
           if (q4a) { q4a.value = answer.after; this.updateCounter('q4a-count', answer.after.length, 150); }
         }
         break;
       case 5:
         const q5 = document.getElementById('q5-input');
-        if (q5) { q5.value = answer; this.updateCounter('q5-count', answer.length, 400); }
+        if (q5 && answer) { q5.value = answer; this.updateCounter('q5-count', answer.length, 400); }
         break;
       case 6:
         const q6 = document.getElementById('q6-input');
-        if (q6) q6.value = answer || '';
+        if (q6 && answer) { q6.value = answer; this.updateCounter('q6-count', answer.length, 400); }
         break;
       case 7:
-        // CORRECTION : lecture via data-value, pas via input checkbox
         if (Array.isArray(answer)) {
           document.querySelectorAll('.channel-card').forEach(card => {
             card.classList.toggle('selected', answer.includes(card.dataset.value));
           });
+        }
+        // Pré-remplir le prix optionnel
+        const priceEl = document.getElementById('price-input');
+        if (priceEl && this.answers['prix_opt']) {
+          priceEl.value = this.answers['prix_opt'];
         }
         break;
     }
@@ -187,13 +184,7 @@ const Questionnaire = {
         break;
 
       case 6:
-        const q6 = document.getElementById('q6-input');
-        if (q6) {
-          q6.oninput = () => {
-            this.saveAnswer(6, q6.value.trim() || 'non précisé');
-            this.validateQ(6, false);
-          };
-        }
+        this.bindTextarea('q6-input', 6, 20, 400, 'q6-count', 'q6-error');
         break;
 
       case 7:
@@ -204,6 +195,15 @@ const Questionnaire = {
             this.validateQ(7, false);
           };
         });
+        // Prix optionnel
+        const priceInput = document.getElementById('price-input');
+        if (priceInput) {
+          priceInput.oninput = () => {
+            const val = priceInput.value.trim();
+            this.answers['prix_opt'] = val;
+            sessionStorage.setItem('offre_prix_opt', val);
+          };
+        }
         break;
     }
 
@@ -235,6 +235,25 @@ const Questionnaire = {
     if (!el) return;
     el.oninput = () => {
       const val = el.value;
+
+      // Gérer le lock suggestion : unlock seulement après +10 caractères
+      if (el.dataset.suggestionLocked) {
+        const suggLen = parseInt(el.dataset.suggestionLength || '0');
+        if (val.length >= suggLen + 10) {
+          delete el.dataset.suggestionLocked;
+          delete el.dataset.suggestionLength;
+          const hintId = id.replace('-input', '-personal-hint');
+          const hintEl = document.getElementById(hintId);
+          if (hintEl) hintEl.classList.add('hidden');
+        } else {
+          // Toujours verrouillé : mettre à jour le compteur et sauvegarder, mais garder désactivé
+          this.updateCounter(counterId, val.length, maxLen);
+          this.saveAnswer(qNum, val);
+          this.updateNextBtnState(qNum, false);
+          return;
+        }
+      }
+
       this.updateCounter(counterId, val.length, maxLen);
       this.saveAnswer(qNum, val);
       const errEl = document.getElementById(errorId);
@@ -288,6 +307,17 @@ const Questionnaire = {
     sessionStorage.setItem('offre_q' + qNum, JSON.stringify(value));
   },
 
+  // ── Vérification suggestion lock ────────
+  isFieldLocked(fieldId) {
+    const el = document.getElementById(fieldId);
+    return el && el.dataset.suggestionLocked === 'true';
+  },
+
+  showPersonalHint(hintId) {
+    const el = document.getElementById(hintId);
+    if (el) el.classList.remove('hidden');
+  },
+
   // ── Validation ──────────────────────────
   validateQ(qNum, showError) {
     let valid = false;
@@ -296,17 +326,32 @@ const Questionnaire = {
       case 1:
         valid = !!document.querySelector('.type-card.selected');
         break;
-      case 2:
-        const q2v = (document.getElementById('q2-input') || {}).value || '';
-        valid = q2v.trim().length >= 10;
-        if (showError && !valid) this.showError('q2-input', 'q2-error');
+
+      case 2: {
+        const el = document.getElementById('q2-input');
+        const val = el ? el.value : '';
+        const locked = this.isFieldLocked('q2-input');
+        valid = val.trim().length >= 10 && !locked;
+        if (showError && !valid) {
+          if (locked) this.showPersonalHint('q2-personal-hint');
+          else this.showError('q2-input', 'q2-error');
+        }
         break;
-      case 3:
-        const q3v = (document.getElementById('q3-input') || {}).value || '';
-        valid = q3v.trim().length >= 20;
-        if (showError && !valid) this.showError('q3-input', 'q3-error');
+      }
+
+      case 3: {
+        const el = document.getElementById('q3-input');
+        const val = el ? el.value : '';
+        const locked = this.isFieldLocked('q3-input');
+        valid = val.trim().length >= 20 && !locked;
+        if (showError && !valid) {
+          if (locked) this.showPersonalHint('q3-personal-hint');
+          else this.showError('q3-input', 'q3-error');
+        }
         break;
-      case 4:
+      }
+
+      case 4: {
         const bv = (document.getElementById('q4-before') || {}).value || '';
         const av = (document.getElementById('q4-after')  || {}).value || '';
         valid = bv.trim().length >= 10 && av.trim().length >= 10;
@@ -315,15 +360,33 @@ const Questionnaire = {
           if (errEl) errEl.classList.remove('hidden');
         }
         break;
-      case 5:
-        const q5v = (document.getElementById('q5-input') || {}).value || '';
-        valid = q5v.trim().length >= 20;
-        if (showError && !valid) this.showError('q5-input', 'q5-error');
+      }
+
+      case 5: {
+        const el = document.getElementById('q5-input');
+        const val = el ? el.value : '';
+        const locked = this.isFieldLocked('q5-input');
+        valid = val.trim().length >= 20 && !locked;
+        if (showError && !valid) {
+          if (locked) this.showPersonalHint('q5-personal-hint');
+          else this.showError('q5-input', 'q5-error');
+        }
         break;
-      case 6:
-        valid = true;
+      }
+
+      case 6: {
+        const el = document.getElementById('q6-input');
+        const val = el ? el.value : '';
+        const locked = this.isFieldLocked('q6-input');
+        valid = val.trim().length >= 20 && !locked;
+        if (showError && !valid) {
+          if (locked) this.showPersonalHint('q6-personal-hint');
+          else this.showError('q6-input', 'q6-error');
+        }
         break;
-      case 7:
+      }
+
+      case 7: {
         const checked = document.querySelectorAll('.channel-card.selected').length;
         valid = checked > 0;
         if (showError && !valid) {
@@ -331,6 +394,7 @@ const Questionnaire = {
           if (errEl) errEl.classList.remove('hidden');
         }
         break;
+      }
     }
 
     this.updateNextBtnState(qNum, valid);
@@ -369,7 +433,8 @@ const Questionnaire = {
   startGeneration() {
     if (App.isGenerating) return;
 
-    const required = [1, 2, 3, 4, 5, 7];
+    // Q6 est maintenant obligatoire (différenciation)
+    const required = [1, 2, 3, 4, 5, 6, 7];
     for (const q of required) {
       if (!this.answers[q]) {
         alert('Il manque des réponses. Vérifie toutes les questions.');
@@ -399,7 +464,7 @@ const Generation = {
     'Je construis ta promesse de transformation…',
     'Rédaction de ta page de vente…',
     'Création de tes emails de lancement…',
-    'Finalisation de l\'offre complète…',
+    'Finalisation de ta structure d\'offre…',
     'Dernières vérifications…',
   ],
   msgInterval: null,
@@ -464,7 +529,7 @@ const Generation = {
 
     const warnTimeout = setTimeout(() => {
       const msgEl = document.getElementById('loading-msg');
-      if (msgEl) msgEl.textContent = 'Ton offre est plus complexe que la moyenne — encore quelques secondes…';
+      if (msgEl) msgEl.textContent = 'Ton offre est plus complexe que la moyenne, encore quelques secondes…';
     }, 30000);
 
     try {
@@ -484,7 +549,6 @@ const Generation = {
       }
 
       const data = await response.json();
-
       if (!data.result) throw new Error('Pas de résultat dans la réponse');
 
       const parsed = this.parseClaudeResponse(data.result);
@@ -512,8 +576,8 @@ const Generation = {
       console.error('[Generation error]', err);
 
       this.showRetryError(isAbort
-        ? 'La génération a pris trop de temps. Tes réponses sont sauvegardées — réessaie.'
-        : 'Une erreur technique est survenue. Tes réponses sont sauvegardées — clique sur Réessayer.'
+        ? 'La génération a pris trop de temps. Tes réponses sont sauvegardées, réessaie.'
+        : 'Une erreur technique est survenue. Tes réponses sont sauvegardées, clique sur Réessayer.'
       );
     }
   },
@@ -527,9 +591,7 @@ const Generation = {
       const parsed = JSON.parse(clean);
       const required = ['titres', 'promesse', 'architecture_offre', 'prix', 'page_de_vente', 'page_capture', 'emails'];
       const missing = required.filter(k => !parsed[k]);
-      if (missing.length > 0) {
-        console.warn('[Parsing] Clés manquantes:', missing);
-      }
+      if (missing.length > 0) console.warn('[Parsing] Clés manquantes:', missing);
       return parsed;
     } catch (e) {
       console.error('[Parsing] JSON.parse échoué:', e);
@@ -557,16 +619,24 @@ const Generation = {
 
   showFatalError() {
     const errMsg = document.getElementById('loading-error-msg');
-    if (errMsg) errMsg.textContent = 'Notre service rencontre un problème. Tes réponses sont bien sauvegardées — reviens dans quelques minutes.';
+    if (errMsg) errMsg.textContent = 'Notre service rencontre un problème. Tes réponses sont bien sauvegardées, reviens dans quelques minutes.';
     const retryBtn = document.getElementById('retry-btn');
     if (retryBtn) retryBtn.style.display = 'none';
   },
 };
 
+
 /* ═══════════════════════════════════════
    SUGGESTIONS — Logique cliquable
+   - Q2/Q3/Q5/Q6 : lock suggestion,
+     oblige une modification personnelle
+   - Q1/Q7 : comportement standard
 ═══════════════════════════════════════ */
 (function initSuggestions() {
+
+  // Questions qui nécessitent une personnalisation après suggestion
+  const PERSONAL_REQUIRED_IDS = ['q2-input', 'q3-input', 'q5-input', 'q6-input'];
+
   document.addEventListener('click', function(e) {
     const btn = e.target.closest('.suggestion-btn');
     if (!btn) return;
@@ -574,6 +644,7 @@ const Generation = {
     const value = btn.dataset.value;
     const target = btn.dataset.target;
 
+    // Cas "Autre" — focus sur le textarea, ne pas pré-remplir
     if (btn.classList.contains('suggestion-autre')) {
       const grid = btn.closest('.suggestions-grid');
       const textarea = grid ? grid.nextElementSibling : null;
@@ -587,28 +658,64 @@ const Generation = {
       return;
     }
 
+    // Trouver le champ cible
     let field = null;
     if (target) {
       field = document.getElementById(target);
     } else {
       const grid = btn.closest('.suggestions-grid');
       field = grid ? grid.nextElementSibling : null;
-      if (field && field.classList.contains('char-counter')) {
-        field = null;
-      }
+      if (field && field.classList.contains('char-counter')) field = null;
       if (!field || (field.tagName !== 'TEXTAREA' && field.tagName !== 'INPUT')) {
         const qContent = btn.closest('.q-content');
         field = qContent ? (qContent.querySelector('textarea') || qContent.querySelector('input[type="text"]')) : null;
       }
     }
 
-    if (field) {
-      field.value = value;
+    if (!field) return;
+
+    // Remplir le champ
+    field.value = value;
+
+    // Marquer le bouton comme sélectionné
+    btn.closest('.suggestions-grid').querySelectorAll('.suggestion-btn').forEach(b => b.classList.remove('selected'));
+    btn.classList.add('selected');
+
+    // Comportement selon le type de champ
+    if (PERSONAL_REQUIRED_IDS.includes(field.id)) {
+      // Lock : oblige une personnalisation (+10 caractères minimum)
+      field.dataset.suggestionLocked = 'true';
+      field.dataset.suggestionLength = value.length.toString();
+
+      // Mettre à jour le compteur manuellement
+      const countId = field.id.replace('-input', '-count');
+      const countEl = document.getElementById(countId);
+      if (countEl) {
+        countEl.textContent = field.value.length;
+        const maxLen = parseInt(field.getAttribute('maxlength')) || 400;
+        const parent = countEl.closest('.char-counter');
+        if (parent) {
+          parent.classList.toggle('warning', field.value.length > maxLen * 0.85);
+          parent.classList.remove('over');
+        }
+      }
+
+      // Afficher le hint personnalisation
+      const hintId = field.id.replace('-input', '-personal-hint');
+      const hintEl = document.getElementById(hintId);
+      if (hintEl) hintEl.classList.remove('hidden');
+
+      // Désactiver le bouton Suivant
+      Questionnaire.updateNextBtnState(Questionnaire.currentQ, false);
+
+      // Scroll vers le champ pour inviter à modifier
+      field.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      field.focus();
+
+    } else {
+      // Comportement standard : dispatch input event
       field.dispatchEvent(new Event('input'));
       field.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     }
-
-    btn.closest('.suggestions-grid').querySelectorAll('.suggestion-btn').forEach(b => b.classList.remove('selected'));
-    btn.classList.add('selected');
   });
 })();
