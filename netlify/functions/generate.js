@@ -2,8 +2,9 @@
    generate.js — OffreOS
    - MOCK_MODE=true : réponse simulée, 0 appel Claude
    - MOCK_MODE=false : appel Claude Haiku réel
-   - Prompt sobre et crédible, sans marketing agressif
-   - Tutoiement imposé dans tous les outputs
+   - Q6 : différenciation (pourquoi toi ?)
+   - Prix : champ optionnel (answers['prix_opt'])
+   - Tutoiement imposé
    - Promesses de résultats commerciaux interdites
 ═══════════════════════════════════════════════════════ */
 
@@ -67,7 +68,7 @@ const MOCK_RESULT = {
   ]
 };
 
-// ── Prompt système — sobre, crédible, tutoiement, sans promesses de résultats ──
+// ── Prompt système ────────────────────────────────────
 const SYSTEM_PROMPT = `Tu es un consultant en positionnement et en copywriting pour le marché francophone. Tu aides des entrepreneurs, consultants, coachs et prestataires de service à structurer leur offre et leur message.
 
 RÈGLE DE FORMAT ABSOLUE : Réponds uniquement avec un objet JSON valide. Aucun texte avant ou après. Aucun markdown. JSON brut uniquement.
@@ -76,81 +77,67 @@ Structure JSON obligatoire :
 {"titres":["t1","t2","t3"],"promesse":"string","architecture_offre":"string","prix":{"montant":"string","justification":"string"},"page_de_vente":{"headline":"string","probleme":"string","solution":"string","offre":"string","objections":"string","cta":"string"},"page_capture":{"headline":"string","benefices":"string","lead_magnet":"string"},"emails":[{"numero":1,"objet":"string","corps":"string"},{"numero":2,"objet":"string","corps":"string"},{"numero":3,"objet":"string","corps":"string"}]}
 
 RÈGLE DE TUTOIEMENT ABSOLUE :
-- Tous les contenus générés s'adressent à l'entrepreneur en le tutoyant.
-- Utiliser systématiquement : "tu", "ton", "ta", "tes", "toi".
+- Tous les contenus s'adressent à l'entrepreneur en le tutoyant : "tu", "ton", "ta", "tes".
 - Ne jamais utiliser "vous", "votre", "vos" pour s'adresser à l'entrepreneur.
-- Exception unique : dans la page de vente ou les emails, quand l'entrepreneur s'adresse à ses propres clients, le ton peut être au vouvoiement ou tutoiement selon ce qui est naturel pour sa niche. Mais l'entrepreneur lui-même est toujours tutoyé.
+- Exception : dans la page de vente ou les emails, quand l'entrepreneur s'adresse à ses propres clients, le ton peut être adapté à sa niche.
 - Garder un ton professionnel, sobre et crédible malgré le tutoiement.
 
-RÈGLES DE CONTENU — à respecter impérativement :
+UTILISATION DE LA DIFFÉRENCIATION :
+- La réponse à "Pourquoi toi plutôt qu'un autre" est l'élément le plus important pour personnaliser l'offre.
+- Intègre les éléments de différenciation dans les titres, la promesse, la page de vente et les emails.
+- Ne pas l'ignorer même si la réponse est courte — c'est ce qui rend l'offre unique et non générique.
+- Si l'entrepreneur cite une expérience vécue, une méthode spécifique ou des preuves concrètes, les utiliser explicitement dans le contenu généré.
+
+RÈGLES DE CONTENU :
 
 TON ET STYLE :
 - Français professionnel, direct, sobre. Pas de superlatifs inutiles.
-- Éviter le registre "formateur business agressif" ou "gourou du marketing".
-- Préférer : "clarifier", "structurer", "présenter avec clarté", "améliorer", "construire une base", "mettre en place une méthode", "mieux présenter ton service", "préparer tes premiers messages".
-- Éviter : "changer ta vie", "devenir libre", "revenus automatiques", "méthode infaillible", "les agences cachent ça".
+- Éviter : "formateur business agressif", "gourou du marketing", "changer ta vie", "devenir libre", "revenus automatiques".
+- Préférer : "clarifier", "structurer", "présenter avec clarté", "construire une base", "mettre en place une méthode".
 
 INTERDICTIONS ABSOLUES SUR LES PROMESSES DE RÉSULTATS :
-Ces formulations sont strictement interdites dans tous les champs du JSON.
 
 Ne jamais promettre des clients obtenus :
-- Interdit : "tes premiers clients", "décrocher des clients", "avoir des clients en X jours", "1-2 clients avant la fin de", "remplir ton agenda".
+- Interdit : "tes premiers clients", "décrocher des clients", "avoir des clients en X jours", "remplir ton agenda".
 - Autorisé : "mettre en place une méthode de prospection", "préparer tes premiers messages", "construire une base de prospection".
 
 Ne jamais promettre des revenus :
-- Interdit : "tes premiers revenus", "revenus concrets", "revenus réguliers", "X€ par mois", "des revenus dès".
+- Interdit : "tes premiers revenus", "revenus concrets", "X€ par mois", "des revenus dès".
 - Autorisé : "clarifier ton positionnement", "avoir une offre plus claire à tester".
 
 Ne jamais promettre un retour sur investissement :
-- Interdit : "un seul client rembourse", "ça se rentabilise", "l'investissement devient positif", "ce coût se rembourse".
+- Interdit : "un seul client rembourse", "ça se rentabilise", "l'investissement devient positif".
 - Autorisé : "Tarif cohérent avec le niveau d'accompagnement et le temps passé."
 
 Ne jamais promettre un délai de résultat :
-- Interdit : "en 30 jours", "en 3 mois tu auras", "d'ici la fin du programme", "avant la fin de l'accompagnement tu obtiendras".
+- Interdit : "en 30 jours tu auras", "en 3 mois", "avant la fin du programme tu obtiendras".
 - Autorisé : "sortir avec un plan d'action concret", "identifier les actions prioritaires".
 
-Ne jamais promettre un volume de prospects ou de rendez-vous :
-- Interdit : "5 prospects par semaine", "2 rendez-vous par mois", "X contacts qualifiés".
-- Autorisé : "augmenter tes chances d'obtenir des retours".
-
 Ne jamais garantir l'efficacité :
-- Interdit : "ça marche si tu appliques", "les résultats seront au rendez-vous", "tu auras des clients si tu suis le plan", "résultats garantis".
+- Interdit : "ça marche si tu appliques", "résultats garantis", "tu auras des clients si tu suis le plan".
 - Autorisé : "éviter de rester seul face aux blocages", "mieux présenter ton service".
 
-RÈGLES SPÉCIFIQUES PAR SECTION :
+RÈGLES PAR SECTION :
 
 PRIX — justification :
-- Ne jamais écrire que l'accompagnement "se rembourse avec un client" ou que "l'investissement devient positif".
 - Écrire uniquement : "Tarif cohérent avec le niveau d'accompagnement et le temps passé. À ajuster selon ta valeur perçue, ton expérience et le marché visé."
+- Ne jamais écrire que ça "se rembourse avec un client".
 
-OBJECTIONS — réponses :
-- Ne jamais écrire "ça marche si tu appliques" ou toute formulation garantissant un résultat.
+OBJECTIONS :
 - Inclure systématiquement : "L'accompagnement ne garantit pas un résultat commercial. Il aide à clarifier les actions prioritaires et à éviter de rester seul face aux blocages."
 
-PAGE DE CAPTURE — lead_magnet et benefices :
-- Ne jamais écrire qu'un email automatique sera envoyé ("on t'envoie des emails", "tu recevras une série de conseils", "emails pendant 1-2 semaines").
-- Décrire uniquement la ressource téléchargeable : "Ressource gratuite à consulter immédiatement", "Guide à utiliser comme base de travail", "Exemple de plan d'action à adapter à ton contexte".
+PAGE DE CAPTURE :
+- Ne jamais écrire qu'un email automatique sera envoyé.
+- Décrire uniquement : "Ressource gratuite à consulter immédiatement", "Guide à utiliser comme base de travail".
 
 URGENCE ET RARETÉ :
-- Ne jamais inventer d'urgence artificielle ("demain les portes se ferment", "plus que 3 places").
-- Ne jamais inventer de garantie de remboursement si l'utilisateur ne l'a pas mentionnée.
-- Ne jamais créer de fausse rareté.
+- Ne jamais inventer d'urgence artificielle ni de garantie de remboursement non mentionnée.
 
 EMAILS :
-- Ton conversationnel, professionnel, en tutoiement. Pas de fausse deadline.
+- Ton conversationnel, professionnel, tutoiement. Pas de fausse deadline.
 - Email 1 : accueil + question ouverte.
 - Email 2 : valeur concrète, conseil ou méthode utile.
-- Email 3 : présentation sobre de l'offre, invitation à un échange, sans promesse de résultat commercial.
-
-PAGE DE VENTE :
-- Persuasive mais honnête. Décrire le problème réellement, sans dramatisation excessive.
-- Les objections doivent être réelles et les réponses factuelles, sans garantie de résultat.
-- Le CTA doit inviter à un premier contact ou à un appel, pas à acheter impulsivement.
-
-ADAPTATION :
-- Adapter le registre au type de projet (coaching, formation, service, produit).
-- Adapter le niveau de promesse à ce que l'utilisateur a fourni.
-- Ne pas compléter agressivement ce qui manque — rester sobre si les informations sont limitées.`;
+- Email 3 : présentation sobre de l'offre, invitation à un échange.`;
 
 // ── Prompt utilisateur ────────────────────────────────
 function buildPrompt(a) {
@@ -160,11 +147,12 @@ function buildPrompt(a) {
     service:   'Prestation de service ou consulting',
     produit:   'Produit digital (template, outil, ressource)'
   };
-  const ch = Array.isArray(a[7]) ? a[7].join(', ') : (a[7] || 'non précisé');
-  const b  = (a[4] && a[4].before) ? a[4].before : 'non précisé';
-  const af = (a[4] && a[4].after)  ? a[4].after  : 'non précisé';
-  const px = (a[6] && a[6].length > 2 && a[6] !== 'non précisé')
-    ? a[6]
+  const ch   = Array.isArray(a[7]) ? a[7].join(', ') : (a[7] || 'non précisé');
+  const b    = (a[4] && a[4].before) ? a[4].before : 'non précisé';
+  const af   = (a[4] && a[4].after)  ? a[4].after  : 'non précisé';
+  const diff = a[6] || 'non précisée';
+  const px   = (a['prix_opt'] && a['prix_opt'].length > 2)
+    ? a['prix_opt']
     : 'non fourni — proposer une fourchette réaliste pour ce type d\'offre sur le marché FR, sans être agressif';
 
   return `Crée une offre structurée pour cet entrepreneur francophone.
@@ -175,15 +163,17 @@ PROBLÈME PRINCIPAL DE LA CIBLE : ${a[3] || 'non précisé'}
 SITUATION AVANT L'ACCOMPAGNEMENT : ${b}
 SITUATION APRÈS L'ACCOMPAGNEMENT : ${af}
 CONTENU DE L'OFFRE : ${a[5] || 'non précisé'}
+DIFFÉRENCIATION (pourquoi cet entrepreneur plutôt qu'un autre) : ${diff}
 BUDGET CLIENT : ${px}
 CANAUX D'ACQUISITION : ${ch}
 
 Instructions :
 - Tutoie l'entrepreneur dans tous les contenus générés.
+- Utilise la différenciation pour personnaliser l'offre — c'est l'élément clé.
 - Reste sobre et crédible.
-- Ne promets aucun client obtenu, aucun revenu, aucun retour sur investissement, aucun délai de résultat commercial.
-- Ne mentionne pas d'envoi automatique d'emails si ce n'est pas explicitement fourni.
-- Si des informations manquent, complète de façon raisonnable sans exagérer.
+- Ne promets aucun client obtenu, aucun revenu, aucun retour sur investissement, aucun délai de résultat.
+- Ne mentionne pas d'envoi automatique d'emails.
+- Si des informations manquent, complète raisonnablement sans exagérer.
 - Génère le JSON complet.`;
 }
 
@@ -191,7 +181,7 @@ Instructions :
 function sanitize(answers) {
   if (!answers || typeof answers !== 'object') return {};
   const clean = {};
-  const max = { 1:50, 2:150, 3:200, 5:300, 6:80 };
+  const max = { 1:50, 2:150, 3:200, 5:300, 6:300 };
   for (let i = 1; i <= 7; i++) {
     const v = answers[i];
     if (v == null) continue;
@@ -204,6 +194,10 @@ function sanitize(answers) {
     } else {
       clean[i] = v;
     }
+  }
+  // Prix optionnel
+  if (answers['prix_opt']) {
+    clean['prix_opt'] = String(answers['prix_opt']).slice(0, 100);
   }
   return clean;
 }
@@ -220,7 +214,7 @@ function cleanAndParse(text) {
   if (start === -1 || end === -1 || end <= start) return null;
   t = t.slice(start, end + 1);
   try { return JSON.parse(t); } catch (e) {
-    console.error('[Parsing] Echec JSON.parse:', e.message, '| Texte reçu (200 car.):', t.slice(0, 200));
+    console.error('[Parsing] Echec JSON.parse:', e.message, '| Texte (200 car.):', t.slice(0, 200));
     return null;
   }
 }
@@ -235,7 +229,7 @@ exports.handler = async (event) => {
   };
 
   if (event.httpMethod === 'OPTIONS') return { statusCode: 200, headers, body: '' };
-  if (event.httpMethod !== 'POST') return { statusCode: 405, headers, body: JSON.stringify({ error: 'Method not allowed' }) };
+  if (event.httpMethod !== 'POST')    return { statusCode: 405, headers, body: JSON.stringify({ error: 'Method not allowed' }) };
 
   const ip = (event.headers['x-forwarded-for'] || '').split(',')[0] || 'unknown';
   if (!checkRateLimit(ip)) return { statusCode: 429, headers, body: JSON.stringify({ error: 'Trop de requêtes — réessaie dans 1 heure.' }) };
@@ -260,7 +254,7 @@ exports.handler = async (event) => {
   if (!apiKey) return { statusCode: 500, headers, body: JSON.stringify({ error: 'Clé API Claude manquante dans les variables Netlify.' }) };
 
   const controller = new AbortController();
-  const tid = setTimeout(() => controller.abort(), 25000);
+  const tid = setTimeout(() => controller.abort(), 45000);
 
   try {
     const res = await fetch('https://api.anthropic.com/v1/messages', {
@@ -273,7 +267,7 @@ exports.handler = async (event) => {
       },
       body: JSON.stringify({
         model: 'claude-haiku-4-5-20251001',
-        max_tokens: 2500,
+        max_tokens: 4000,
         system: SYSTEM_PROMPT,
         messages: [{ role: 'user', content: buildPrompt(sanitize(answers)) }],
       }),
