@@ -1,7 +1,7 @@
 {
   "name": "offre-os-prototype",
   "version": "1.0.0",
-  "description": "OffreOS — module AICoach / REVENUS-IA.FR",
+  "description": "OffreOS : module AICoach / REVENUS-IA.FR",
   "private": true,
   "engines": { "node": ">=18.0.0" }
 }

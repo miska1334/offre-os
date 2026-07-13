@@ -1,5 +1,5 @@
 /* ═══════════════════════════════════════
-   QUESTIONNAIRE.JS — Q1 à Q7
+   QUESTIONNAIRE.JS : Q1 à Q7
    Validation, navigation, sauvegarde
    - Q6 : différenciation (pourquoi toi ?)
    - Prix : champ optionnel sur Q7
@@ -65,8 +65,29 @@ const Questionnaire = {
     }
     sessionStorage.removeItem('offre_current_q');
     sessionStorage.removeItem('offre_prix_opt');
+    sessionStorage.removeItem('offre_result');
+    sessionStorage.removeItem('offre_generation_complete');
     this.answers = {};
     this.currentQ = 1;
+    this.resetFormUI();
+  },
+
+  resetFormUI() {
+    document.querySelectorAll('.type-card, .channel-card, .suggestion-btn')
+      .forEach((el) => el.classList.remove('selected'));
+    document.querySelectorAll('.q-textarea, .q-input').forEach((el) => {
+      el.value = '';
+      el.classList.remove('error');
+      delete el.dataset.suggestionLocked;
+      delete el.dataset.suggestionLength;
+      delete el.dataset.suggestionValue;
+    });
+    document.querySelectorAll('.q-error').forEach((el) => el.classList.add('hidden'));
+    ['q2-count', 'q3-count', 'q4b-count', 'q4a-count', 'q5-count', 'q6-count']
+      .forEach((id) => {
+        const el = document.getElementById(id);
+        if (el) el.textContent = '0';
+      });
   },
 
   // ── Affichage d'une question ─────────────
@@ -239,9 +260,17 @@ const Questionnaire = {
       // Gérer le lock suggestion : unlock seulement après +10 caractères
       if (el.dataset.suggestionLocked) {
         const suggLen = parseInt(el.dataset.suggestionLength || '0');
-        if (val.length >= suggLen + 10) {
+        const suggestionValue = (el.dataset.suggestionValue || '').trim();
+        const rewritten = val.trim().length >= minLen
+          && suggestionValue
+          && val.trim() !== suggestionValue
+          && !val.includes(suggestionValue);
+        const detailAdded = val.trim().length >= suggLen + 10;
+
+        if (detailAdded || rewritten) {
           delete el.dataset.suggestionLocked;
           delete el.dataset.suggestionLength;
+          delete el.dataset.suggestionValue;
           const hintId = id.replace('-input', '-personal-hint');
           const hintEl = document.getElementById(hintId);
           if (hintEl) hintEl.classList.add('hidden');
@@ -447,14 +476,21 @@ const Questionnaire = {
     App.generationStartTime = Date.now();
     Analytics.generationStarted();
 
+    const retryBtn = document.getElementById('retry-btn');
+    const errorBlock = document.getElementById('loading-error');
+    const barEl = document.getElementById('loading-bar');
+    if (retryBtn) retryBtn.style.display = '';
+    if (errorBlock) errorBlock.classList.add('hidden');
+    if (barEl) barEl.style.width = '0%';
+
     App.showScreen('loading');
-    Generation.start(this.answers);
+    Generation.start({ ...this.answers });
   },
 };
 
 
 /* ═══════════════════════════════════════
-   GENERATION — Appel API + Loading
+   GENERATION : Appel API + Loading
 ═══════════════════════════════════════ */
 const Generation = {
   retryCount: 0,
@@ -544,14 +580,24 @@ const Generation = {
       clearTimeout(warnTimeout);
 
       if (!response.ok) {
-        const errorText = await response.text().catch(() => 'Erreur serveur');
-        throw new Error(`API error ${response.status}: ${errorText}`);
+        let serverMessage = '';
+        try {
+          const payload = await response.json();
+          serverMessage = payload.error || '';
+        } catch {
+          serverMessage = '';
+        }
+        const error = new Error(serverMessage || 'Le service de génération est momentanément indisponible.');
+        error.status = response.status;
+        throw error;
       }
 
       const data = await response.json();
-      if (!data.result) throw new Error('Pas de résultat dans la réponse');
+      if (!data.result) throw new Error('La réponse reçue est incomplète.');
 
-      const parsed = this.parseClaudeResponse(data.result);
+      const parsed = typeof data.result === 'object'
+        ? data.result
+        : this.parseClaudeResponse(data.result);
       if (!parsed) throw new Error('Parsing JSON échoué');
 
       this.stopLoading();
@@ -572,13 +618,15 @@ const Generation = {
       this.stopLoading();
 
       const isAbort = err.name === 'AbortError';
-      Analytics.generationError(isAbort ? 'timeout' : 'api_error');
+      const errorType = isAbort ? 'timeout' : (err.status === 429 ? 'rate_limit' : 'api_error');
+      Analytics.generationError(errorType);
       console.error('[Generation error]', err);
 
-      this.showRetryError(isAbort
-        ? 'La génération a pris trop de temps. Tes réponses sont sauvegardées, réessaie.'
-        : 'Une erreur technique est survenue. Tes réponses sont sauvegardées, clique sur Réessayer.'
-      );
+      let message = err.message || 'Une erreur technique est survenue.';
+      if (isAbort) message = 'La génération a pris trop de temps. Tes réponses sont sauvegardées, réessaie.';
+      if (err.status === 429) message = 'Trop de générations ont été demandées. Attends un peu avant de réessayer.';
+
+      this.showRetryError(message);
     }
   },
 
@@ -627,7 +675,7 @@ const Generation = {
 
 
 /* ═══════════════════════════════════════
-   SUGGESTIONS — Logique cliquable
+   SUGGESTIONS : Logique cliquable
    - Q2/Q3/Q5/Q6 : lock suggestion,
      oblige une modification personnelle
    - Q1/Q7 : comportement standard
@@ -644,7 +692,7 @@ const Generation = {
     const value = btn.dataset.value;
     const target = btn.dataset.target;
 
-    // Cas "Autre" — focus sur le textarea, ne pas pré-remplir
+    // Cas "Autre" : focus sur le textarea, ne pas pré-remplir
     if (btn.classList.contains('suggestion-autre')) {
       const grid = btn.closest('.suggestions-grid');
       const textarea = grid ? grid.nextElementSibling : null;
@@ -686,6 +734,7 @@ const Generation = {
       // Lock : oblige une personnalisation (+10 caractères minimum)
       field.dataset.suggestionLocked = 'true';
       field.dataset.suggestionLength = value.length.toString();
+      field.dataset.suggestionValue = value;
 
       // Mettre à jour le compteur manuellement
       const countId = field.id.replace('-input', '-count');

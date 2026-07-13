@@ -1,6 +1,6 @@
 /* ═══════════════════════════════════════════════════
-   AICoach / OffreOS — style.css
-   Direction  : Dark Luxe — IA Premium — Sobre
+   AICoach / OffreOS : style.css
+   Direction  : Dark Luxe : IA Premium : Sobre
    Version    : Dark Luxe V1.0
    Palette    :
      Fond principal    #0E0E12
@@ -11,8 +11,8 @@
      Accent or         #C9A84C
      Bordures or       rgba(212,175,55,0.18)
    Typographie :
-     DM Serif Display  — titres héros
-     DM Sans           — tout le reste
+     DM Serif Display  : titres héros
+     DM Sans           : tout le reste
 ═══════════════════════════════════════════════════ */
 
 /* ── Variables ─────────────────────────────────── */
@@ -695,7 +695,7 @@ body {
   line-height: 1.3;
 }
 
-/* Q Footer — sticky */
+/* Q Footer : sticky */
 .q-footer {
   position: sticky;
   bottom: 0;
@@ -1282,4 +1282,117 @@ body {
 ::selection {
   background: rgba(201, 168, 76, 0.22);
   color: var(--text-primary);
+}
+
+/* ═══════════════════════════════════════════════════
+   CORRECTIFS BÊTA 1.1
+═══════════════════════════════════════════════════ */
+.saved-result-card {
+  margin-bottom: 22px;
+  padding: 16px;
+  border: 1px solid var(--gold-border);
+  border-radius: var(--radius);
+  background: var(--gold-fill);
+}
+.saved-result-card strong {
+  display: block;
+  color: var(--text-primary);
+  font-size: 0.9rem;
+  margin-bottom: 5px;
+}
+.saved-result-card p {
+  color: var(--text-secondary);
+  font-size: 0.78rem;
+  line-height: 1.5;
+  margin-bottom: 12px;
+}
+.saved-result-actions {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.saved-result-actions .btn-secondary {
+  flex: 1 1 170px;
+}
+.btn-text {
+  background: transparent;
+  border: 0;
+  color: var(--gold);
+  font: 600 0.78rem 'DM Sans', sans-serif;
+  padding: 10px 2px;
+  cursor: pointer;
+}
+.btn-text:hover { text-decoration: underline; }
+
+.titre-card,
+.pdv-block-header,
+.capture-block-header,
+.email-card-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+.titre-card .btn-copy,
+.pdv-block-header .btn-copy,
+.capture-block-header .btn-copy,
+.email-card-header .btn-copy {
+  margin-top: 0;
+  flex-shrink: 0;
+}
+.pdv-block-content,
+.capture-block-content,
+.email-corps {
+  margin-top: 10px;
+}
+.email-num,
+.email-label {
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text-muted);
+}
+.email-objet,
+.email-subject {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-top: 12px;
+  margin-bottom: 8px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+.email-objet-label { color: var(--text-muted); }
+.email-corps,
+.email-content {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  line-height: 1.7;
+  white-space: pre-line;
+}
+.btn-copy.copied {
+  border-color: var(--gold-active);
+  color: var(--gold);
+  background: var(--gold-fill);
+}
+.promesse-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+}
+
+@media (max-width: 520px) {
+  .email-card-header,
+  .pdv-block-header,
+  .capture-block-header {
+    align-items: center;
+  }
+  .email-card-header .btn-copy {
+    max-width: 130px;
+  }
+  .promesse-card {
+    flex-direction: column;
+  }
 }

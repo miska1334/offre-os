@@ -1,5 +1,5 @@
 /* ═══════════════════════════════════════
-   ANALYTICS — Plausible (cookieless, RGPD-ok)
+   ANALYTICS : Plausible (cookieless, RGPD-ok)
    Remplacer src par ton domaine Plausible
 ═══════════════════════════════════════ */
 
@@ -59,8 +59,12 @@ const Analytics = {
   generationError(errorType) {
     this.track('generation_error', { error_type: errorType });
   },
-  copyCLicked(sectionName) {
+  copyClicked(sectionName) {
     this.track('copy_clicked', { section_name: sectionName });
+  },
+  // Alias conservé pour compatibilité avec d'anciens déploiements.
+  copyCLicked(sectionName) {
+    this.copyClicked(sectionName);
   },
   paywallViewed() {
     this.track('paywall_viewed');

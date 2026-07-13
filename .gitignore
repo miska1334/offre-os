@@ -1,0 +1,14 @@
+# Secrets locaux
+.env
+.env.*
+!.env.example
+
+# Dépendances et outils
+node_modules/
+.netlify/
+.DS_Store
+*.log
+
+# Archives et sauvegardes
+*.zip
+*.bak

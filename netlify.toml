@@ -1,43 +1,32 @@
-# ── NETLIFY.TOML ──────────────────────────────
-# Déploiement du prototype OffreOS
+# AICoach / OffreOS : configuration Netlify bêta 1.1
 
 [build]
-  # Dossier racine du site (HTML/CSS/JS)
   publish = "."
-  # Dossier des fonctions serverless
   functions = "netlify/functions"
 
-# Redirects pour les pages légales
+[functions]
+  node_bundler = "esbuild"
+
 [[redirects]]
   from = "/confidentialite"
-  to   = "/confidentialite.html"
+  to = "/confidentialite.html"
   status = 200
 
 [[redirects]]
   from = "/mentions-legales"
-  to   = "/mentions-legales.html"
+  to = "/mentions-legales.html"
   status = 200
 
-# Headers de sécurité
 [[headers]]
   for = "/*"
   [headers.values]
     X-Frame-Options = "DENY"
-    X-XSS-Protection = "1; mode=block"
     X-Content-Type-Options = "nosniff"
     Referrer-Policy = "strict-origin-when-cross-origin"
-    Permissions-Policy = "camera=(), microphone=(), geolocation=()"
+    Permissions-Policy = "camera=(), microphone=(), geolocation=(), payment=()"
+    Cross-Origin-Opener-Policy = "same-origin"
+    Content-Security-Policy = "default-src 'self'; script-src 'self' https://plausible.io; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com data:; img-src 'self' data:; connect-src 'self' https://plausible.io; object-src 'none'; base-uri 'self'; frame-ancestors 'none'; form-action 'self' mailto:"
 
-# Headers pour les fonctions
-[[headers]]
-  for = "/.netlify/functions/*"
-  [headers.values]
-    Access-Control-Allow-Origin = "*"
-    Access-Control-Allow-Methods = "POST, OPTIONS"
-    Access-Control-Allow-Headers = "Content-Type"
-
-# Variables d'environnement à définir dans le dashboard Netlify
-# NE JAMAIS mettre la clé API ici
-# Variables requises :
-#   CLAUDE_API_KEY = sk-ant-...
-#   MOCK_MODE = true
+# Variables à définir uniquement dans Netlify > Project configuration
+# CLAUDE_API_KEY = clé Anthropic (à marquer comme secret)
+# MOCK_MODE = false en production, true pour des tests sans coût API
