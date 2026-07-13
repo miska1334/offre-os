@@ -64,6 +64,10 @@ body {
 
 /* ── Utility ───────────────────────────────────── */
 .hidden { display: none !important; }
+[hidden],
+form[hidden] {
+  display: none !important;
+}
 
 /* ── Screens ───────────────────────────────────── */
 .screen {
