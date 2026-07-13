@@ -1,10 +1,11 @@
 /* ═══════════════════════════════════════
-   RESULTS.JS — Affichage des outputs
+   RESULTS.JS : Affichage des outputs
    + Paywall + Copy logic
 ═══════════════════════════════════════ */
 
 const Results = {
   data: null,
+  paywallObserver: null,
 
   render(data) {
     this.data = data;
@@ -70,7 +71,7 @@ const Results = {
   renderPrix(prix) {
     const montantEl = document.getElementById('prix-montant');
     const justifEl  = document.getElementById('prix-justification');
-    if (montantEl) montantEl.textContent = prix.montant || '—';
+    if (montantEl) montantEl.textContent = prix.montant || '-';
     if (justifEl)  justifEl.textContent  = prix.justification || '';
 
     // Bouton copier
@@ -79,7 +80,7 @@ const Results = {
       const fullText = `Prix recommandé : ${prix.montant}\n${prix.justification || ''}`;
       copyBtn.dataset.text    = fullText;
       copyBtn.dataset.section = 'prix';
-      copyBtn.addEventListener('click', () => this.copyText(fullText, copyBtn));
+      copyBtn.onclick = () => this.copyText(fullText, copyBtn);
     }
   },
 
@@ -103,7 +104,7 @@ const Results = {
           <span class="pdv-block-label">${b.label}</span>
           <button class="btn-copy" data-text="${this.escapeAttr(pdv[b.key] || '')}" data-section="pdv_${b.key}">Copier</button>
         </div>
-        <div class="pdv-block-content">${this.escape(pdv[b.key] || '—')}</div>
+        <div class="pdv-block-content">${this.escape(pdv[b.key] || '-')}</div>
       </div>
     `).join('');
 
@@ -127,7 +128,7 @@ const Results = {
           <span>${b.label}</span>
           <button class="btn-copy" data-text="${this.escapeAttr(capture[b.key] || '')}" data-section="capture_${b.key}">Copier</button>
         </div>
-        <div class="capture-block-content">${this.escape(capture[b.key] || '—')}</div>
+        <div class="capture-block-content">${this.escape(capture[b.key] || '-')}</div>
       </div>
     `).join('');
 
@@ -151,14 +152,14 @@ const Results = {
       return `
         <div class="email-card">
           <div class="email-card-header">
-            <span class="email-num">Email ${i + 1} — ${labels[i] || ''}</span>
+            <span class="email-num">Email ${i + 1} : ${labels[i] || ''}</span>
             <button class="btn-copy" data-text="${this.escapeAttr(fullText)}" data-section="email_${i+1}">Copier cet email</button>
           </div>
           <div class="email-objet">
             <span class="email-objet-label">Objet : </span>
-            ${this.escape(email.objet || '—')}
+            ${this.escape(email.objet || '-')}
           </div>
-          <div class="email-corps">${this.escape(email.corps || '—')}</div>
+          <div class="email-corps">${this.escape(email.corps || '-')}</div>
         </div>
       `;
     }).join('');
@@ -166,12 +167,12 @@ const Results = {
     this.bindCopyButtons(container);
   },
 
-  // ── Copy All — Page de vente ─────────────
+  // ── Copy All : Page de vente ─────────────
   initCopyAll() {
     const btn = document.getElementById('copy-all-pdv');
     if (!btn || !this.data) return;
 
-    btn.addEventListener('click', () => {
+    btn.onclick = () => {
       const pdv = this.data.page_de_vente || {};
       const blocs = [
         ['HEADLINE', pdv.headline],
@@ -187,41 +188,40 @@ const Results = {
         .join('\n\n');
 
       this.copyText(fullText, btn);
-      Analytics.copyCLicked('pdv_all');
-    });
+      Analytics.copyClicked('pdv_all');
+    };
   },
 
   // ── Paywall ──────────────────────────────
   initPaywall() {
     // IntersectionObserver pour tracker la vue
     const paywall = document.getElementById('section-paywall');
+    if (this.paywallObserver) this.paywallObserver.disconnect();
     if (paywall && 'IntersectionObserver' in window) {
       let tracked = false;
-      const observer = new IntersectionObserver((entries) => {
+      this.paywallObserver = new IntersectionObserver((entries) => {
         if (entries[0].isIntersecting && !tracked) {
           tracked = true;
           Analytics.paywallViewed();
-          observer.disconnect();
+          this.paywallObserver.disconnect();
         }
       }, { threshold: 0.3 });
-      observer.observe(paywall);
+      this.paywallObserver.observe(paywall);
     }
 
     // CTA payant
     const ctaBtn = document.getElementById('paywall-cta');
     if (ctaBtn) {
-      ctaBtn.addEventListener('click', () => {
-        Analytics.paywallCtaClicked();
-      });
+      ctaBtn.onclick = () => Analytics.paywallCtaClicked();
     }
 
     // Dismiss
     const dismissBtn = document.getElementById('paywall-dismiss');
     if (dismissBtn) {
-      dismissBtn.addEventListener('click', () => {
+      dismissBtn.onclick = () => {
         dismissBtn.textContent = 'Bonne continuation ! Reviens quand tu veux créer une nouvelle offre.';
         dismissBtn.disabled = true;
-      });
+      };
     }
   },
 
@@ -229,11 +229,11 @@ const Results = {
   initProSticky() {
     const btn = document.getElementById('pro-sticky-btn');
     if (!btn) return;
-    btn.addEventListener('click', () => {
+    btn.onclick = () => {
       const paywall = document.getElementById('section-paywall');
       if (paywall) paywall.scrollIntoView({ behavior: 'smooth' });
       Analytics.paywallViewed();
-    });
+    };
   },
 
   // ── Helpers copier ──────────────────────
@@ -243,7 +243,7 @@ const Results = {
         const text    = btn.dataset.text || '';
         const section = btn.dataset.section || 'unknown';
         this.copyText(text, btn);
-        Analytics.copyCLicked(section);
+        Analytics.copyClicked(section);
       });
     });
   },
@@ -271,7 +271,7 @@ const Results = {
       document.execCommand('copy');
       this.showCopied(btn);
     } catch {
-      btn.textContent = 'Sélectionne et Ctrl+C';
+      btn.textContent = 'Copie manuelle nécessaire';
     }
     document.body.removeChild(ta);
   },
@@ -301,6 +301,8 @@ const Results = {
     if (!str) return '';
     return String(str)
       .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
       .replace(/"/g, '&quot;')
       .replace(/\n/g, '&#10;');
   },

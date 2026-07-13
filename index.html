@@ -3,8 +3,9 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>AICoach — Crée ton offre avec l'IA</title>
+  <title>AICoach : Crée ton offre avec l'IA</title>
   <meta name="description" content="AICoach t'aide à clarifier ton idée, structurer ton offre et générer une première base de page de vente et d'emails en répondant à 7 questions simples." />
+  <meta name="aicoach-version" content="1.1.0-beta" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet" />
@@ -13,7 +14,7 @@
 <body>
 
 <!-- ═══════════════════════════════════════
-     ÉCRAN 1 — LANDING
+     ÉCRAN 1 : LANDING
 ═══════════════════════════════════════ -->
 <div id="screen-landing" class="screen active">
   <header class="nav">
@@ -33,7 +34,7 @@
       </p>
 
       <div class="proofs" id="proofs-block">
-        <div class="proof-badge">🔒 Bêta en cours · 30 entrepreneurs testent en ce moment</div>
+        <div class="proof-badge">🔒 Bêta gratuite actuellement ouverte</div>
       </div>
 
       <div class="outputs-preview">
@@ -53,12 +54,21 @@
     </div>
 
     <div class="email-capture-card">
+      <div id="saved-result-card" class="saved-result-card hidden">
+        <strong>Une offre est déjà enregistrée sur cet appareil.</strong>
+        <p>Tu peux revoir ton résultat ou repartir de zéro.</p>
+        <div class="saved-result-actions">
+          <button id="view-saved-result" class="btn-secondary" type="button">Revoir mon résultat</button>
+          <button id="new-offer-btn" class="btn-text" type="button">Créer une nouvelle offre</button>
+        </div>
+      </div>
+
       <label class="capture-label" for="email-input">
         Entre ton email pour accéder au test gratuit.
       </label>
 
       <p class="capture-sub" style="margin-top: -6px; margin-bottom: 14px;">
-        Ton email sert uniquement à démarrer le test bêta. Aucun email automatique n'est encore envoyé.
+        Ton email est enregistré pour le suivi de la bêta. Aucun email automatique n'est encore envoyé.
       </p>
 
       <div class="email-input-wrap">
@@ -76,7 +86,7 @@
       <label class="rgpd-label">
         <input type="checkbox" id="rgpd-check" class="rgpd-check" />
         <span class="rgpd-text">
-          J'accepte de recevoir des ressources AICoach par email.
+          J'accepte de recevoir les informations liées à la bêta et des ressources AICoach par email.
           Désinscription possible à tout moment.
           <a href="confidentialite.html" target="_blank" rel="noopener">Politique de confidentialité</a>
         </span>
@@ -95,13 +105,13 @@
     <span>·</span>
     <a href="mentions-legales.html">Mentions légales</a>
     <span>·</span>
-    <span>REVENUS-IA.FR</span>
+    <span>REVENUS-IA.FR · bêta 1.1</span>
   </footer>
 </div>
 
 
 <!-- ═══════════════════════════════════════
-     ÉCRANS 2-8 — QUESTIONNAIRE Q1-Q7
+     ÉCRANS 2-8 : QUESTIONNAIRE Q1-Q7
 ═══════════════════════════════════════ -->
 <div id="screen-questionnaire" class="screen">
 
@@ -266,7 +276,7 @@
         </div>
       </div>
 
-      <!-- Q6 — DIFFÉRENCIATION -->
+      <!-- Q6 : DIFFÉRENCIATION -->
       <div class="q-screen" data-q="6">
         <div class="q-content">
           <h2 class="q-title">Pourquoi toi plutôt qu'un autre ?</h2>
@@ -500,9 +510,19 @@
     <span>·</span>
     <a href="mentions-legales.html">Mentions légales</a>
     <span>·</span>
-    <span>REVENUS-IA.FR</span>
+    <span>REVENUS-IA.FR · bêta 1.1</span>
   </footer>
 </div>
+
+<!-- Formulaire statique détecté par Netlify Forms au déploiement -->
+<form name="aicoach-beta" method="POST" data-netlify="true" netlify-honeypot="bot-field" hidden>
+  <input type="hidden" name="form-name" value="aicoach-beta" />
+  <label>Ne pas remplir : <input name="bot-field" /></label>
+  <input type="email" name="email" />
+  <input type="text" name="consent" />
+  <input type="text" name="source" />
+  <input type="text" name="version" />
+</form>
 
 <script src="js/analytics.js"></script>
 <script src="js/questionnaire.js"></script>
